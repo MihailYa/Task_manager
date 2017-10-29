@@ -1,0 +1,114 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Header Files\Triggers">
+      <UniqueIdentifier>{3f779b51-8ddb-4407-b2a9-1322d68e7dff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Triggers">
+      <UniqueIdentifier>{d611ee9e-098e-4a56-8e74-25eac761b871}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Acts">
+      <UniqueIdentifier>{3a51f3d8-308c-4023-9b7a-b64c1fe8a980}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Acts">
+      <UniqueIdentifier>{75b1404f-6d3d-476c-805c-2caa4c5d5bce}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Task_Manager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Task.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Time.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Task_trigger.cpp">
+      <Filter>Source Files\Triggers</Filter>
+    </ClCompile>
+    <ClCompile Include="Task_trigger_dayly.cpp">
+      <Filter>Source Files\Triggers</Filter>
+    </ClCompile>
+    <ClCompile Include="Task_trigger_entrance.cpp">
+      <Filter>Source Files\Triggers</Filter>
+    </ClCompile>
+    <ClCompile Include="Task_trigger_monthly.cpp">
+      <Filter>Source Files\Triggers</Filter>
+    </ClCompile>
+    <ClCompile Include="Task_trigger_once.cpp">
+      <Filter>Source Files\Triggers</Filter>
+    </ClCompile>
+    <ClCompile Include="Task_trigger_weekly.cpp">
+      <Filter>Source Files\Triggers</Filter>
+    </ClCompile>
+    <ClCompile Include="Task_act.cpp">
+      <Filter>Source Files\Acts</Filter>
+    </ClCompile>
+    <ClCompile Include="Task_act_alert.cpp">
+      <Filter>Source Files\Acts</Filter>
+    </ClCompile>
+    <ClCompile Include="Task_act_prog.cpp">
+      <Filter>Source Files\Acts</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="stdafx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Task_Manager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Task.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Time.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="globals.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Task_trigger.h">
+      <Filter>Header Files\Triggers</Filter>
+    </ClInclude>
+    <ClInclude Include="Task_trigger_dayly.h">
+      <Filter>Header Files\Triggers</Filter>
+    </ClInclude>
+    <ClInclude Include="Task_trigger_entrance.h">
+      <Filter>Header Files\Triggers</Filter>
+    </ClInclude>
+    <ClInclude Include="Task_trigger_monthly.h">
+      <Filter>Header Files\Triggers</Filter>
+    </ClInclude>
+    <ClInclude Include="Task_trigger_once.h">
+      <Filter>Header Files\Triggers</Filter>
+    </ClInclude>
+    <ClInclude Include="Task_trigger_weekly.h">
+      <Filter>Header Files\Triggers</Filter>
+    </ClInclude>
+    <ClInclude Include="Task_act.h">
+      <Filter>Header Files\Acts</Filter>
+    </ClInclude>
+    <ClInclude Include="Task_act_alert.h">
+      <Filter>Header Files\Acts</Filter>
+    </ClInclude>
+    <ClInclude Include="Task_act_prog.h">
+      <Filter>Header Files\Acts</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
