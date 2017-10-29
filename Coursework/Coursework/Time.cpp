@@ -1,11 +1,7 @@
 #include "Time.h"
-#include "globals.h"
 
 Time::Time()
 {
-	time.dat = boost::gregorian::date(1, 1, 0);
-	time.hours = 0;
-	time.minutes = 0;
 }
 
 Time::Time(Time_t time_)
@@ -39,10 +35,11 @@ void Time::Set_next_month_day(const std::vector<unsigned int> month_list, const 
 	// Find nearly year and month
 	boost::gregorian::date tmp;
 	unsigned int index = 0;
+	
 	while (
-		((tmp = boost::gregorian::date(time.dat.year(), month_list[index], time.dat.end_of_month.day())) < time.dat)
-		&&
 		(index < month_list.size())
+		&&
+		((tmp = boost::gregorian::date(time.dat.year(), month_list[index], boost::gregorian::date(time.dat.year(), month_list[index], 1).end_of_month().day())) < time.dat)
 		)
 	{
 		index++;
@@ -55,14 +52,15 @@ void Time::Set_next_month_day(const std::vector<unsigned int> month_list, const 
 	// Find nearly day
 	index = 0;
 	while (
-		(tmp = boost::gregorian::date(tmp.year(), tmp.month(), days_list[index])) < time.dat
-		&&
 		(index < days_list.size())
+		&&
+		(tmp = boost::gregorian::date(tmp.year(), tmp.month(), days_list[index])) < time.dat
 		)
 	{
 		index++;
 	}
 
+	// WTF? VVV
 	if (tmp < time.dat)
 	{
 		tmp = boost::gregorian::date(tmp.year(), tmp.month(), days_list[index]) + boost::gregorian::months(1);
@@ -97,7 +95,7 @@ const Time Time::operator+=(const int num_of_days)
 
 const int Time::operator-(const Time& right) const
 {
-	if (time.dat == right.time.dat)
+	if (time.dat == right.time.dat && time.hours == right.time.hours)
 	{
 		int time_left = time.minutes - right.time.minutes;
 		if (time_left >= 0)
@@ -183,3 +181,10 @@ const bool Time::operator!=(const Time& right) const
 {
 	return !(*this == right);
 }
+
+#ifdef DEBUG
+void Time::output()
+{
+	printf("%d.%d.%d %d:%d\n", time.dat.year(), time.dat.month(), time.dat.day(), time.hours, time.minutes);
+}
+#endif // DEBUG

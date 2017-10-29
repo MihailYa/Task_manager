@@ -1,5 +1,6 @@
 #pragma once
 #include "stdafx.h"
+#include "Task.h"
 
 class Task_Manager
 {

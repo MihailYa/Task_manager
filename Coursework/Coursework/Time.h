@@ -1,12 +1,16 @@
 #pragma once
 #include "stdafx.h"
+#include "globals.h"
 
 struct Time_t
 {
-	/*int year;
-	int month;
-	int mday;
-	int wday;*/
+	Time_t()
+		: dat(boost::gregorian::date(1400, 1, 1)), hours(0), minutes(0)
+	{}
+
+	Time_t(boost::gregorian::date dat_, int hours_, int minutes_)
+		: dat(dat_), hours(hours_), minutes(minutes_)
+	{}
 	boost::gregorian::date dat;
 	int hours;
 	int minutes;
@@ -42,6 +46,11 @@ public:
 	const bool operator<(const Time& right) const;
 	const bool operator==(const Time& right) const;
 	const bool operator!= (const Time& right) const;
+
+#ifdef DEBUG
+	void output();
+#endif // !DEBUG
+
 private:
 	Time_t time;
 };
