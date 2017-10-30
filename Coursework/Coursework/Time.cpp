@@ -17,7 +17,7 @@ void Time::Set_dat(boost::gregorian::date dat_)
 	time.dat = dat_;
 }
 
-void Time::Set_next_weekday(const unsigned int wday_)
+void Time::Set_next_weekday(const boost::date_time::weekdays wday_)
 {
 	int wday = time.dat.day_of_week();
 	int inc = wday_ - wday;
@@ -30,19 +30,19 @@ void Time::Set_next_weekday(const unsigned int wday_)
 
 	time.dat += boost::gregorian::date_duration(inc);
 }
-void Time::Set_next_month_day(const std::vector<unsigned int> month_list, const std::vector<unsigned int> days_list)
+void Time::Set_next_month_day(const std::vector<boost::date_time::months_of_year> month_list, const std::vector<unsigned int> days_list)
 {
 	// Find nearly year and month
 	boost::gregorian::date tmp;
-	unsigned int index = 0;
+	unsigned int m_index = 0;
 	
 	while (
-		(index < month_list.size())
+		(m_index < month_list.size())
 		&&
-		((tmp = boost::gregorian::date(time.dat.year(), month_list[index], boost::gregorian::date(time.dat.year(), month_list[index], 1).end_of_month().day())) < time.dat)
+		((tmp = boost::gregorian::date(time.dat.year(), month_list[m_index], boost::gregorian::date(time.dat.year(), month_list[m_index], 1).end_of_month().day())) < time.dat)
 		)
 	{
-		index++;
+		m_index++;
 	}
 	if (tmp < time.dat)
 	{
@@ -50,21 +50,23 @@ void Time::Set_next_month_day(const std::vector<unsigned int> month_list, const 
 	}
 
 	// Find nearly day
-	index = 0;
+	unsigned int d_index = 0;
 	while (
-		(index < days_list.size())
+		(d_index < days_list.size())
 		&&
-		(tmp = boost::gregorian::date(tmp.year(), tmp.month(), days_list[index])) < time.dat
+		(tmp = boost::gregorian::date(tmp.year(), tmp.month(), days_list[d_index])) < time.dat
 		)
 	{
-		index++;
+		d_index++;
 	}
 
-	// WTF? VVV
 	if (tmp < time.dat)
-	{
-		tmp = boost::gregorian::date(tmp.year(), tmp.month(), days_list[index]) + boost::gregorian::months(1);
-	}
+		if ((m_index += 1) >= month_list.size())
+			tmp = boost::gregorian::date(tmp.year() + 1, month_list[0], days_list[0]);
+		else
+			tmp = boost::gregorian::date(tmp.year(), month_list[m_index], days_list[0]);
+	else
+		tmp = boost::gregorian::date(tmp.year(), month_list[m_index], days_list[d_index]);
 
 	time.dat = tmp;
 }

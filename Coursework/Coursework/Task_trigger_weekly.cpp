@@ -1,6 +1,6 @@
 #include "Task_trigger_weekly.h"
 
-Task_trigger_weekly::Task_trigger_weekly(Trigger_type_t type_, Time time_, unsigned int priority_, short week_day_, unsigned int every_n_week_)
+Task_trigger_weekly::Task_trigger_weekly(Trigger_type_t type_, Time time_, unsigned int priority_, boost::date_time::weekdays week_day_, unsigned int every_n_week_)
 	: Task_trigger(type_, time_, priority_), week_day(week_day_), every_n_week(every_n_week_)
 {
 }

@@ -27,9 +27,9 @@ public:
 	//
 	void Set_dat(boost::gregorian::date dat_);
 	// Add ass many days to make current weekday = wday_
-	void Set_next_weekday(const unsigned int wday_);
+	void Set_next_weekday(const boost::date_time::weekdays wday_);
 	// Set next nearly date
-	void Set_next_month_day(const std::vector<unsigned int> month_list, const std::vector<unsigned int> days_list);
+	void Set_next_month_day(const std::vector<boost::date_time::months_of_year> month_list, const std::vector<unsigned int> days_list);
 
 	//
 	// Getters
