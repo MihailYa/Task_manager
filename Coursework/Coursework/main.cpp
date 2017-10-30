@@ -31,7 +31,8 @@ int main()
 	+monthly
 	+once
 	+entrance
+	
+	*Task_manager.cpp -> read_task func
+	*Think about how to delete once Tasks
 
-	Replace weekday by enum
-	Replace monthday by enum
 */

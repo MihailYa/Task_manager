@@ -20,8 +20,12 @@ public:
 	~Task_trigger();
 
 	Task_trigger(Trigger_type_t type_, Time time_, unsigned int priority_);
+
+	const bool operator<(const Task_trigger &right) const;
+
 	virtual void calculate_time_left(Time c_time) = 0;
 	unsigned int Get_time_left() const { return time_left; }
+	unsigned int Get_priority() const { return priority; }
 		
 protected:
 	Trigger_type_t type;

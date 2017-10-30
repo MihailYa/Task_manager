@@ -12,3 +12,11 @@ Task_trigger::Task_trigger()
 Task_trigger::~Task_trigger()
 {
 }
+
+const bool Task_trigger::operator<(const Task_trigger &right) const
+{
+	if (time_left < right.time_left || (time_left == right.time_left && priority < right.priority))
+		return true;
+	
+	return false;
+}

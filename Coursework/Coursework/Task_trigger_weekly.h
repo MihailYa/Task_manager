@@ -5,7 +5,7 @@ class Task_trigger_weekly :
 	public Task_trigger
 {
 public:
-	Task_trigger_weekly(Trigger_type_t type_, Time time_, unsigned int priority_, boost::date_time::weekdays week_day_, unsigned int every_n_week_);
+	Task_trigger_weekly(Time time_, unsigned int priority_, boost::date_time::weekdays week_day_, unsigned int every_n_week_);
 
 	void calculate_time_left(Time c_time);
 

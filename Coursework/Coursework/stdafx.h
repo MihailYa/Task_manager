@@ -6,3 +6,4 @@
 #include <windows.h>
 #include <boost/date_time/gregorian/gregorian.hpp>
 #include <string>
+#include <fstream>

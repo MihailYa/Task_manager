@@ -5,15 +5,17 @@
 class Task_Manager
 {
 public:
-	Task_Manager();
+	Task_Manager(const char* file_name_);
 	~Task_Manager();
-	
-	void stop();
+
 
 private:
-	void Listener();
-	
-	bool check;
-	std::thread *waiter;
+	void read_task();
+
+
+
+	std::string file_name;
+	std::fstream *file;
+	std::vector<Task> Tasks;
 };
 
