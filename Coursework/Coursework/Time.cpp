@@ -163,6 +163,14 @@ const bool Time::operator>(const Time& right) const
 	return false;
 }
 
+const bool Time::operator>=(const Time& right) const
+{
+	if (*this > right && *this == right)
+		return true;
+
+	return false;
+}
+
 const bool Time::operator<(const Time& right) const
 {
 	if (*this != right)

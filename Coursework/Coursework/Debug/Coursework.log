@@ -1,19 +1,3 @@
-﻿  main.cpp
-c:\users\mikleya\documents\visual studio 2015\projects\github\task_manager\coursework\coursework\main.cpp(22): warning C4996: 'getch': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getch. See online help for details.
-  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\conio.h(452): note: see declaration of 'getch'
-  Time.cpp
-c:\users\mikleya\documents\visual studio 2015\projects\github\task_manager\coursework\coursework\time.cpp(190): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 1 has type 'boost::gregorian::greg_year'
-c:\users\mikleya\documents\visual studio 2015\projects\github\task_manager\coursework\coursework\time.cpp(190): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 2 has type 'boost::gregorian::greg_month'
-c:\users\mikleya\documents\visual studio 2015\projects\github\task_manager\coursework\coursework\time.cpp(190): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 3 has type 'boost::gregorian::greg_day'
-  Task_trigger_weekly.cpp
-  Task_trigger_monthly.cpp
-  Generating Code...
-  Skipping... (no relevant changes detected)
-  Task_trigger_once.cpp
-  Task_trigger_entrance.cpp
-  Task_trigger_dayly.cpp
-  Task_trigger.cpp
-  Task_Manager.cpp
-  Task.cpp
+﻿  Task_act_alert.cpp
   Coursework.vcxproj -> C:\Users\MikleYa\Documents\Visual Studio 2015\Projects\GitHub\Task_manager\Coursework\Debug\Coursework.exe
   Coursework.vcxproj -> C:\Users\MikleYa\Documents\Visual Studio 2015\Projects\GitHub\Task_manager\Coursework\Debug\Coursework.pdb (Full PDB)

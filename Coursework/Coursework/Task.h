@@ -11,6 +11,7 @@
 
 struct Task_header_t
 {
+	unsigned int id;
 	std::string name;
 	std::string desc;
 };

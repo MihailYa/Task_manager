@@ -10,7 +10,7 @@ int main()
 	Task_trigger *t;
 	Time time(Time_t(boost::gregorian::date(2017, 10, 30), 19, 30));
 
-	t = new Task_trigger_once(ONCE, time, 1);
+	t = new Task_trigger_once(time, 1);
 	
 	Time c_time(Time_t(boost::gregorian::date(2017, 10, 30), 19, 16));
 	t->calculate_time_left(c_time);
@@ -32,7 +32,9 @@ int main()
 	+once
 	+entrance
 	
+	
+	*add check on empty file, or file does not exist
 	*Task_manager.cpp -> read_task func
 	*Think about how to delete once Tasks
-
+	*Check error in Task_manager.cpp (Reading month_list)
 */

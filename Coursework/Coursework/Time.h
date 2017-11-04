@@ -43,6 +43,7 @@ public:
 	const Time operator+=(const int num_of_days);
 	const int operator-(const Time& right) const;
 	const bool operator>(const Time& right) const;
+	const bool operator>=(const Time& right) const;
 	const bool operator<(const Time& right) const;
 	const bool operator==(const Time& right) const;
 	const bool operator!= (const Time& right) const;
