@@ -1,3 +1,25 @@
-﻿  Task_act_alert.cpp
-  Coursework.vcxproj -> C:\Users\MikleYa\Documents\Visual Studio 2015\Projects\GitHub\Task_manager\Coursework\Debug\Coursework.exe
-  Coursework.vcxproj -> C:\Users\MikleYa\Documents\Visual Studio 2015\Projects\GitHub\Task_manager\Coursework\Debug\Coursework.pdb (Full PDB)
+﻿  Time.cpp
+c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\time.cpp(198): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 1 has type 'boost::gregorian::greg_year'
+c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\time.cpp(198): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 2 has type 'boost::gregorian::greg_month'
+c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\time.cpp(198): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 3 has type 'boost::gregorian::greg_day'
+  Task_trigger_weekly.cpp
+  Task_trigger_once.cpp
+  Task_trigger_monthly.cpp
+  Task_trigger_entrance.cpp
+  Task_trigger_dayly.cpp
+  Task_trigger.cpp
+  Task_Manager.cpp
+c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\task_manager.cpp(14): warning C4018: '<': signed/unsigned mismatch
+c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\task_manager.cpp(30): warning C4018: '<': signed/unsigned mismatch
+  Task_act_prog.cpp
+  Task_act_alert.cpp
+  Task_act.cpp
+  Task.cpp
+  main.cpp
+c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\main.cpp(22): warning C4996: 'getch': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getch. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.16299.0\ucrt\conio.h(452): note: see declaration of 'getch'
+  Generating Code...
+c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\task_manager.cpp(62): warning C4172: returning address of local variable or temporary: task
+c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\task_manager.cpp(199): warning C4172: returning address of local variable or temporary: act
+c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\task_manager.cpp(152): warning C4172: returning address of local variable or temporary: trigger
+  Coursework.vcxproj -> C:\Users\mikle\Documents\Visual Studio 2017\Projects\GitHub\Task_manager\Coursework\Debug\Coursework.exe
