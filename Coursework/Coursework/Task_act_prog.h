@@ -9,6 +9,9 @@ public:
 	
 	void make_act();
 
+	std::string Get_prog_name() const { return prog_name; }
+	std::strign Get_prog_params() const { return prog_params; }
+
 private:
 	std::string prog_name;
 	std::string prog_params;

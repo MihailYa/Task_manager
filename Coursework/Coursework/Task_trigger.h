@@ -24,8 +24,15 @@ public:
 	const bool operator<(const Task_trigger &right) const;
 
 	virtual void calculate_time_left(Time c_time) = 0;
+
+	//
+	//	Getters
+	//
 	unsigned int Get_time_left() const { return time_left; }
 	unsigned int Get_priority() const { return priority; }
+	Trigger_type_t Get_type() const { return type; }
+	Time Get_time() const { return time; }
+
 		
 protected:
 	Trigger_type_t type;

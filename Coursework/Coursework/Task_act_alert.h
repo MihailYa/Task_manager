@@ -9,6 +9,9 @@ public:
 	
 	void make_act();
 
+	std::string Get_alert_name() const { return alert_name; }
+	std::string Get_alert_text() const { return alert_text; }
+
 private:
 	std::string alert_name;
 	std::string alert_text;

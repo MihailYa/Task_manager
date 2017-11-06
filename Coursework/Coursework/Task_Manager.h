@@ -9,7 +9,6 @@ public:
 	~Task_Manager();
 
 	void create_task(Task_header_t header, Task_trigger *&trigger, Task_act *&act);
-	//void create_task(params);
 	//void delete_task(id);
 private:
 	/*
@@ -27,6 +26,7 @@ private:
 	void write_trigger(Task_trigger *&trigger);
 	void write_act(Task_act *&act);
 
+	void refresh();
 	//bool stop;
 	//void refresh();
 	//void waiter();
@@ -50,7 +50,7 @@ private:
 			*trigger struct:
 			{
 				Trigger_type
-				time_t
+				Time
 				priority
 				// If weekly:
 				boost::date_time::weekdays week_day
@@ -74,6 +74,6 @@ private:
 	*/
 	std::fstream *m_file;
 	std::vector<Task*> m_Tasks;
-	unsigned int m_last_id;
+	int m_last_id;
 };
 

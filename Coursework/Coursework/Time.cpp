@@ -9,6 +9,18 @@ Time::Time(Time_t time_)
 {
 }
 
+Time::Time(unsigned int year_, unsigned int month_, unsigned int day_, unsigned int hours_, unsigned int minutes_)
+{
+	if (year_ < 1400 || month_ <= 0 || month_ > 12 || day_ > boost::gregorian::date(year_, month_, 1).end_of_month().day() || hours_ >= 24 || minutes_ >= 60)
+	{
+		exit(EXIT_FAILURE);
+	}
+
+	time.dat = boost::gregorian::date(year_, month_, day_);
+	time.hours = hours_;
+	time.minutes = minutes_;
+}
+
 //
 // Setters
 //

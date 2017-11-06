@@ -9,6 +9,9 @@ public:
 
 	void calculate_time_left(Time c_time);
 
+	const std::vector<boost::date_time::months_of_year> Get_month_list() const { return month_list; }
+	const std::vector<unsigned int> Get_days_list() const { return days_list; }
+
 private:
 	std::vector<boost::date_time::months_of_year> month_list;
 	std::vector<unsigned int> days_list;

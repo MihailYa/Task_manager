@@ -21,6 +21,7 @@ class Time
 public:
 	Time();
 	Time(Time_t time_);
+	Time(unsigned int year_, unsigned int month_, unsigned int day_, unsigned int hours_, unsigned int minutes_);
 	
 	//
 	// Setters
