@@ -51,7 +51,7 @@ public:
 
 #ifdef DEBUG
 	void output();
-#endif // !DEBUG
+#endif // DEBUG
 
 private:
 	Time_t time;

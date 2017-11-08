@@ -26,6 +26,11 @@ public:
 	void make_act();
 
 	static const bool compare(const Task &left, const Task &right);
+
+#ifdef DEBUG
+	void output();
+#endif // DEBUG
+
 private:
 	Task_header_t header;
 	Task_trigger *trigger;

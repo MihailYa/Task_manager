@@ -33,6 +33,9 @@ public:
 	Trigger_type_t Get_type() const { return type; }
 	Time Get_time() const { return time; }
 
+#ifdef DEBUG
+	void output();
+#endif // DEBUG
 		
 protected:
 	Trigger_type_t type;

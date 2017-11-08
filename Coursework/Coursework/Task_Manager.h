@@ -9,7 +9,11 @@ public:
 	~Task_Manager();
 
 	void create_task(Task_header_t header, Task_trigger *&trigger, Task_act *&act);
-	//void delete_task(id);
+	void delete_task(unsigned int id_);
+
+#ifdef DEBUG
+	void output();
+#endif // DEBUG
 private:
 	/*
 	read_task:
@@ -25,6 +29,8 @@ private:
 	void write_header(Task_header_t header);
 	void write_trigger(Task_trigger *&trigger);
 	void write_act(Task_act *&act);
+
+	void skeep_task();
 
 	void refresh();
 	//bool stop;
@@ -58,7 +64,7 @@ private:
 				// If monthly
 				unsigned int n; // Size of month_list
 				boost::date_time::months_of_year month_list[n]
-				jnsigned int n; // Size of days_list
+				unsigned int n; // Size of days_list
 				unsigned int days_list[n]
 			}
 

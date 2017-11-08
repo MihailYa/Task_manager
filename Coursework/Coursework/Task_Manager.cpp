@@ -2,9 +2,15 @@
 
 Task_Manager::Task_Manager(const char* file_name_)
 {
+#ifdef DEBUG
+	printf("\nReading tasks...");
+#endif // DEBUG
+
 	m_last_id = -1;
 	m_file_name = file_name_;
 	m_file = new std::fstream(m_file_name, std::ifstream::in | std::ifstream::binary);
+
+	m_file->seekg(0, std::ios::beg);
 
 	unsigned int n; // Number of tasks
 	m_file->read((char*)&n, sizeof(unsigned int));
@@ -22,6 +28,9 @@ Task_Manager::Task_Manager(const char* file_name_)
 	delete m_file;
 	m_file = nullptr;
 
+#ifdef DEBUG
+	printf("\n%d tasks was read.\n", n);
+#endif // DEBUG
 	//waiter = new std::thread(&Task_Manager::Listener, this);
 }
 
@@ -37,27 +46,102 @@ Task_Manager::~Task_Manager()
 
 void Task_Manager::create_task(Task_header_t header, Task_trigger *&trigger, Task_act *&act)
 {
+#ifdef DEBUG
+	printf("\nCreating task...");
+#endif // DEBUG
 	header.id = ++m_last_id;
 
-	m_file = new std::fstream(m_file_name, std::ofstream::out | std::fstream::binary);
+	m_file = new std::fstream(m_file_name, std::ios::in | std::ios::out | std::ios::binary);
 
 	// Write number of tasks
+	m_file->seekp(0, std::ios::beg);
 	unsigned int n = m_last_id + 1;
 	m_file->write((char*)&n, sizeof(unsigned int));
 
 	// Write in end of file
-	m_file->seekp(std::ofstream::end);
+	m_file->seekp(0, std::ios::end);
 	write_header(header);
 	write_trigger(trigger);
 	write_act(act);
+
+	m_file->close();
+
+	delete m_file;
+	m_file = nullptr;
 
 	// Add task in list
 	Task *tmp = new Task(header, trigger, act);
 	m_Tasks.push_back(tmp);
 
+#ifdef DEBUG
+	printf("\nTask was create.\n");
+#endif // DEBUG
+#ifndef DEBUG
 	// Refresh list
 	refresh();
+#endif // !DEBUG
 }
+
+void Task_Manager::delete_task(unsigned int id_)
+{
+#ifdef DEBUG
+	printf("\nDeleting task...");
+#endif // DEBUG
+	exit(EXIT_FAILURE);
+
+	//
+	// Add delete in list
+	//
+
+	m_file = new std::fstream(m_file_name, std::ios::in | std::ios::out | std::ios::binary);
+
+	for (int i = 0; i < id_; i++)
+		skeep_task();
+
+	unsigned int begin_of_task = m_file->tellg();
+	skeep_task();
+	unsigned int end_of_task = m_file->tellg();
+
+	m_file->seekg(0, std::ios::end);
+	unsigned int file_size = m_file->tellg();
+
+	unsigned int rest_file_size = file_size - end_of_task;
+	m_file->seekg(end_of_task);
+	
+	char *rest_file = new char[rest_file_size];
+	m_file->read(rest_file, rest_file_size);
+
+	m_file->seekp(begin_of_task);
+	m_file->write(rest_file, rest_file_size);
+	delete[] rest_file;
+	
+	file_size -= end_of_task - begin_of_task;
+	char *all_file = new char[file_size];
+	m_file->read(all_file, file_size);
+
+	m_file->close();
+	delete[] m_file;
+
+	// Trunc file
+	m_file = new std::fstream(m_file_name, std::ios::out | std::ios::binary);
+
+	m_file->write(all_file, file_size);
+	delete[] all_file;
+
+	m_file->close();
+}
+
+#ifdef DEBUG
+void Task_Manager::output()
+{
+
+	for (int i = 0; i < m_Tasks.size(); i++)
+	{
+		printf("\n==========\nTask #%d", i);
+		m_Tasks[i]->output();
+	}
+}
+#endif //DEBUG
 
 
 Task*& Task_Manager::read_task(unsigned int id)
@@ -87,14 +171,18 @@ Task_header_t Task_Manager::read_header(unsigned int id)
 	unsigned int n;
 	char *tmp_char;
 	m_file->read((char*)&n, sizeof(unsigned int));
-	tmp_char = new char[n];
-	m_file->read(tmp_char, n);
+	tmp_char = new char[n+1];
+	m_file->read(tmp_char, sizeof(char)*n);
+	tmp_char[n] = '\0';
 	header.name = tmp_char;
+	delete[] tmp_char;
 
 	m_file->read((char*)&n, sizeof(unsigned int));
-	tmp_char = new char[n];
-	m_file->read(tmp_char, n);
+	tmp_char = new char[n+1];
+	m_file->read(tmp_char, sizeof(char)*n);
+	tmp_char[n] = '\0';
 	header.desc = tmp_char;
+	delete[] tmp_char;
 
 	return header;
 }
@@ -178,8 +266,9 @@ Task_act*& Task_Manager::read_act()
 	char *buf;
 	
 	m_file->read((char*)&n, sizeof(unsigned int));
-	buf = new char[n];
-	m_file->read((char*)&buf, n * sizeof(char));
+	buf = new char[n+1];
+	m_file->read(buf, sizeof(char)*n);
+	buf[n] = '\0';
 	/*
 	str1:
 	name of prog for Tasc_act_prog
@@ -189,8 +278,9 @@ Task_act*& Task_Manager::read_act()
 	delete[] buf;
 
 	m_file->read((char*)&n, sizeof(unsigned int));
-	buf = new char[n];
-	m_file->read((char*)&buf, n * sizeof(char));
+	buf = new char[n+1];
+	m_file->read(buf, sizeof(char)*n);
+	buf[n] = '\0';
 	/*
 	str2:
 	params of prog for Tasc_act_prog
@@ -218,7 +308,18 @@ Task_act*& Task_Manager::read_act()
 
 void Task_Manager::write_header(Task_header_t header)
 {
-	m_file->write((char*)&header, sizeof(Task_header_t));
+	unsigned int n;
+	const char* tmp;
+
+	n = header.name.size();
+	m_file->write((char*)&n, sizeof(unsigned int));
+	tmp = header.name.c_str();
+	m_file->write((char*)tmp, sizeof(char)*n);
+
+	n = header.desc.size();
+	m_file->write((char*)&n, sizeof(unsigned int));
+	tmp = header.desc.c_str();
+	m_file->write((char*)tmp, sizeof(char)*n);
 }
 
 void Task_Manager::write_trigger(Task_trigger *&trigger)
@@ -226,7 +327,12 @@ void Task_Manager::write_trigger(Task_trigger *&trigger)
 	Trigger_type_t type = trigger->Get_type();
 	m_file->write((char*)&type, sizeof(Trigger_type_t));
 	
-	m_file->write((char*)&trigger->Get_time(), sizeof(Time));
+	Time time = trigger->Get_time();
+	m_file->write((char*)&time, sizeof(Time));
+
+	unsigned int priority = trigger->Get_priority();
+	m_file->write((char*)&priority, sizeof(unsigned int));
+
 
 	if (type == WEEKLY)
 	{
@@ -274,17 +380,60 @@ void Task_Manager::write_act(Task_act *&act)
 	n = name.size();
 	m_file->write((char*)&n, sizeof(unsigned int));
 	tmp = name.c_str();
-	m_file->write((char*)&tmp, sizeof(char)*n);
+	m_file->write(tmp, sizeof(char)*n);
 
 	n = text.size();
 	m_file->write((char*)&n, sizeof(unsigned int));
 	tmp = text.c_str();
-	m_file->write((char*)&tmp, sizeof(char)*n);
+	m_file->write(tmp, sizeof(char)*n);
+}
+
+
+void Task_Manager::skeep_task()
+{
+	Trigger_type_t trig_type;
+	Task_act_type_t act_type;
+	unsigned int n;
+
+	// Skip number of tasks
+	m_file->seekg((unsigned int)m_file->tellg() + sizeof(unsigned int));
+	
+	// Skip header
+	m_file->read((char*)&n, sizeof(unsigned int));
+	m_file->seekg((unsigned int)m_file->tellg() + sizeof(char)*n);
+	m_file->read((char*)&n, sizeof(unsigned int));
+	m_file->seekg((unsigned int)m_file->tellg() + sizeof(char)*n);
+
+	// Skip trigger
+	m_file->read((char*)&trig_type, sizeof(Trigger_type_t));
+	m_file->seekg((unsigned int)m_file->tellg() + sizeof(Time) + sizeof(unsigned int));
+	switch (trig_type)
+	{
+	case WEEKLY:
+		m_file->seekg((unsigned int)m_file->tellg() + sizeof(boost::date_time::weekdays) + sizeof(unsigned int));
+		break;
+	case MONTHLY:
+		m_file->read((char*)&n, sizeof(unsigned int));
+		m_file->seekg((unsigned int)m_file->tellg() + sizeof(boost::date_time::months_of_year)*n);
+		m_file->read((char*)&n, sizeof(unsigned int));
+		m_file->seekg((unsigned int)m_file->tellg() + sizeof(unsigned int)*n);
+		break;
+	}
+
+	// Skip act
+	m_file->read((char*)&act_type, sizeof(Task_act_type_t));
+	m_file->read((char*)&n, sizeof(unsigned int));
+	m_file->seekg((unsigned int)m_file->tellg() + sizeof(char)*n);
+	m_file->read((char*)&n, sizeof(unsigned int));
+	m_file->seekg((unsigned int)m_file->tellg() + sizeof(char)*n);
 }
 
 
 void Task_Manager::refresh()
 {
+#ifdef DEBUG
+	printf("\nRefresh task list...");
+#endif // DEBUG
 	exit(EXIT_FAILURE);
 	// Add function
 }
