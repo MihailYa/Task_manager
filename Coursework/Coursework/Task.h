@@ -24,8 +24,11 @@ public:
 
 	void calculate_time_left(Time c_time);
 	void make_act();
-
+	
 	static const bool compare(const Task &left, const Task &right);
+
+	unsigned int Get_id() const { return header.id; }
+	const Task& operator--();
 
 #ifdef DEBUG
 	void output();

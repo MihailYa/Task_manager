@@ -17,6 +17,7 @@ Task_Manager::Task_Manager(const char* file_name_)
 
 	// Read tasks
 	Task *tmp;
+
 	for (int i = 0; i < n; i++)
 	{
 		tmp = read_task(i);
@@ -87,14 +88,17 @@ void Task_Manager::delete_task(unsigned int id_)
 #ifdef DEBUG
 	printf("\nDeleting task...");
 #endif // DEBUG
-	exit(EXIT_FAILURE);
-
-	//
-	// Add delete in list
-	//
-
+	unsigned int n; // Number of tasks
 	m_file = new std::fstream(m_file_name, std::ios::in | std::ios::out | std::ios::binary);
 
+	// Change number of tasks
+	n = m_last_id;
+	m_file->seekp(0, std::ios::beg);
+	m_file->write((char*)&n, sizeof(unsigned int));
+	m_last_id--;
+
+	// Skeep tasks before id_ task
+	m_file->seekg(sizeof(unsigned int), std::ios::beg);
 	for (int i = 0; i < id_; i++)
 		skeep_task();
 
@@ -111,24 +115,45 @@ void Task_Manager::delete_task(unsigned int id_)
 	char *rest_file = new char[rest_file_size];
 	m_file->read(rest_file, rest_file_size);
 
-	m_file->seekp(begin_of_task);
+	m_file->seekp(begin_of_task, std::ios::beg);
 	m_file->write(rest_file, rest_file_size);
 	delete[] rest_file;
 	
+	m_file->seekg(0, std::ios::beg);
 	file_size -= end_of_task - begin_of_task;
 	char *all_file = new char[file_size];
 	m_file->read(all_file, file_size);
 
 	m_file->close();
-	delete[] m_file;
+	delete m_file;
+	m_file = nullptr;
 
 	// Trunc file
 	m_file = new std::fstream(m_file_name, std::ios::out | std::ios::binary);
 
+	m_file->seekp(0, std::ios::beg);
 	m_file->write(all_file, file_size);
 	delete[] all_file;
 
 	m_file->close();
+	delete m_file;
+	m_file = nullptr;
+
+	std::vector<Task*>::iterator elem = find_task_by_id(id_);
+	if (*elem != nullptr)
+	{
+		delete *elem;
+		*elem = nullptr;
+		m_Tasks.erase(elem);
+	}
+	else
+		exit(EXIT_FAILURE);
+
+	for (int i = 0; i < m_Tasks.size(); ++i)
+	{
+		if (m_Tasks[i]->Get_id() > id_)
+			--*m_Tasks[i];
+	}
 }
 
 #ifdef DEBUG
@@ -389,43 +414,57 @@ void Task_Manager::write_act(Task_act *&act)
 }
 
 
+std::vector<Task*>::iterator Task_Manager::find_task_by_id(unsigned int id)
+{
+	std::vector<Task*>::iterator curr, end;
+	curr = m_Tasks.begin();
+	end = m_Tasks.end();
+
+	while (curr != end)
+	{
+		if ((*curr)->Get_id() == id)
+			return curr;
+		++curr;
+	}
+
+	return end;
+}
+
+
 void Task_Manager::skeep_task()
 {
 	Trigger_type_t trig_type;
 	Task_act_type_t act_type;
 	unsigned int n;
-
-	// Skip number of tasks
-	m_file->seekg((unsigned int)m_file->tellg() + sizeof(unsigned int));
 	
 	// Skip header
 	m_file->read((char*)&n, sizeof(unsigned int));
-	m_file->seekg((unsigned int)m_file->tellg() + sizeof(char)*n);
+	m_file->seekg(sizeof(char)*n, std::ios::cur);
 	m_file->read((char*)&n, sizeof(unsigned int));
-	m_file->seekg((unsigned int)m_file->tellg() + sizeof(char)*n);
+	m_file->seekg(sizeof(char)*n, std::ios::cur);
 
 	// Skip trigger
 	m_file->read((char*)&trig_type, sizeof(Trigger_type_t));
-	m_file->seekg((unsigned int)m_file->tellg() + sizeof(Time) + sizeof(unsigned int));
+	m_file->seekg(sizeof(Time) + sizeof(unsigned int), std::ios::cur);
 	switch (trig_type)
 	{
 	case WEEKLY:
-		m_file->seekg((unsigned int)m_file->tellg() + sizeof(boost::date_time::weekdays) + sizeof(unsigned int));
+		m_file->seekg(sizeof(boost::date_time::weekdays) + sizeof(unsigned int), std::ios::cur);
 		break;
 	case MONTHLY:
 		m_file->read((char*)&n, sizeof(unsigned int));
-		m_file->seekg((unsigned int)m_file->tellg() + sizeof(boost::date_time::months_of_year)*n);
+		m_file->seekg(sizeof(boost::date_time::months_of_year)*n, std::ios::cur);
 		m_file->read((char*)&n, sizeof(unsigned int));
-		m_file->seekg((unsigned int)m_file->tellg() + sizeof(unsigned int)*n);
+		m_file->seekg(sizeof(unsigned int)*n, std::ios::cur);
 		break;
 	}
 
 	// Skip act
 	m_file->read((char*)&act_type, sizeof(Task_act_type_t));
 	m_file->read((char*)&n, sizeof(unsigned int));
-	m_file->seekg((unsigned int)m_file->tellg() + sizeof(char)*n);
+	m_file->seekg(sizeof(char)*n, std::ios::cur);
 	m_file->read((char*)&n, sizeof(unsigned int));
-	m_file->seekg((unsigned int)m_file->tellg() + sizeof(char)*n);
+	m_file->seekg(sizeof(char)*n, std::ios::cur);
 }
 
 

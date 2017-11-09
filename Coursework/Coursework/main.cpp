@@ -3,6 +3,8 @@
 
 int main()
 {
+	//printf("%d", sizeof(unsigned int));
+	//getch();
 	/*std::ofstream *f = new std::ofstream("tasks.txt", std::ofstream::binary | std::ios::trunc);
 	unsigned int n = 0;
 	f->write((char*)&n, sizeof(unsigned int));
@@ -32,6 +34,8 @@ int main()
 	
 	Task_Manager m("tasks.txt");
 
+
+	//m.delete_task(1);
 	/*Task_header_t header;
 	header.name = "Task number one";
 	header.desc = "And some desc fo this(1 task";
@@ -44,10 +48,10 @@ int main()
 	header2.desc = "Desc for number two";
 	Task_trigger *trig2 = new Task_trigger_dayly(Time(2017, 11, 8, 14, 0), 1);
 	Task_act *act2 = new Task_act_alert("task2 alert", "Important 2 task");
-	m.create_task(header2, trig2, act2);*/
+	m.create_task(header2, trig2, act2);
 
 
-	/*Task_header_t header3;
+	Task_header_t header3;
 	header3.name = "Task number tree";
 	header3.desc = "And some desc fo this(3 task";
 	Task_trigger *trig3 = new Task_trigger_weekly(Time(2017, 11, 8, 14, 0), 1, boost::date_time::Monday, 2);
@@ -97,10 +101,11 @@ int main()
 	+once
 	+entrance
 	
-	
+	*check on delete task which does not exist (id_ > m_last_id)
 	*add check on empty file, or file does not exist
 	*Think about how to delete once Tasks
 	*Check error in Task_manager.cpp (Reading month_list)
+	*Don't create new fstream each time (use one instead)
 
 	*ctrl+h exit(EXIT_FAILURE) -> exceptions
 */

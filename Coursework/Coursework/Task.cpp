@@ -40,6 +40,13 @@ const bool Task::compare(const Task &left, const Task &right)
 	return (left.trigger < right.trigger);
 }
 
+const Task& Task::operator--()
+{
+	this->header.id--;
+	
+	return *this;
+}
+
 #ifdef DEBUG
 void Task::output()
 {

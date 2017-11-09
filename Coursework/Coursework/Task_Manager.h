@@ -30,6 +30,13 @@ private:
 	void write_trigger(Task_trigger *&trigger);
 	void write_act(Task_act *&act);
 
+	/**
+	* Find task by id in m_Tasks vector
+	* @param id - id of task
+	* @return iterrator, which pointing on the task
+	*/
+	std::vector<Task*>::iterator find_task_by_id(unsigned int id);
+
 	void skeep_task();
 
 	void refresh();
