@@ -25,9 +25,19 @@ public:
 	void calculate_time_left(Time c_time);
 	void make_act();
 	
-	static const bool compare(const Task &left, const Task &right);
+	static const bool compare(const Task *left, const Task *right);
 
+	//
+	// Getters
+	//
 	unsigned int Get_id() const { return header.id; }
+	unsigned int Get_time_left() const { return trigger->Get_time_left(); }
+
+	//
+	// Setters
+	//
+	void Set_last_time(Time last_time_) { last_time = last_time_; }
+
 	const Task& operator--();
 
 #ifdef DEBUG
@@ -38,5 +48,7 @@ private:
 	Task_header_t header;
 	Task_trigger *trigger;
 	Task_act *act;
+
+	Time last_time; // Last time when task has been done
 };
 

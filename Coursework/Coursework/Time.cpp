@@ -21,6 +21,53 @@ Time::Time(unsigned int year_, unsigned int month_, unsigned int day_, unsigned 
 	time.minutes = minutes_;
 }
 
+Time Time::current_time()
+{
+	time_t c_time = std::time(NULL);
+	tm *tm_c_time;
+	tm_c_time = std::localtime(&c_time);
+
+	return Time(tm_c_time->tm_year + 1900, tm_c_time->tm_mon + 1, tm_c_time->tm_mday, tm_c_time->tm_hour, tm_c_time->tm_min);
+}
+
+unsigned int Time::to_minute_left()
+{
+	time_t c_time = std::time(NULL);
+	tm *tm_c_time;
+	tm_c_time = std::localtime(&c_time);
+	
+	unsigned int n;
+	if (tm_c_time->tm_sec == 0)
+		n = 0;
+	else
+		n = 60 - tm_c_time->tm_sec;
+
+	return n;
+}
+
+unsigned int Time::to_hour_left()
+{
+	time_t c_time = std::time(NULL);
+	tm *tm_c_time;
+	tm_c_time = std::localtime(&c_time);
+
+	unsigned int n_sec, n_min, n;
+	if (tm_c_time->tm_min == 0 || tm_c_time->tm_sec == 0)
+		n = 0;
+	else
+	{
+		n_min = (60 - tm_c_time->tm_min);
+		if (tm_c_time->tm_sec != 0)
+		{
+			--n_min;
+			n_sec = 60 - tm_c_time->tm_sec;
+		}
+		n = n_min * 60 + n_sec;
+	}
+
+	return n;
+}
+
 //
 // Setters
 //
@@ -89,6 +136,11 @@ void Time::Set_next_month_day(const std::vector<boost::date_time::months_of_year
 boost::gregorian::date Time::Get_dat() const
 {
 	return time.dat;
+}
+
+Time_t Time::Get_time() const
+{
+	return time;
 }
 
 

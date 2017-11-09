@@ -27,7 +27,10 @@ Task::~Task()
 
 void Task::calculate_time_left(Time c_time)
 {
-	trigger->calculate_time_left(c_time);
+	if (c_time == last_time)
+		trigger->Set_time_left(INF);
+	else
+		trigger->calculate_time_left(c_time);
 }
 
 void Task::make_act()
@@ -35,9 +38,9 @@ void Task::make_act()
 	act->make_act();
 }
 
-const bool Task::compare(const Task &left, const Task &right)
+const bool Task::compare(const Task *left, const Task *right)
 {
-	return (left.trigger < right.trigger);
+	return (*(left->trigger) < *(right->trigger));
 }
 
 const Task& Task::operator--()

@@ -33,6 +33,11 @@ public:
 	Trigger_type_t Get_type() const { return type; }
 	Time Get_time() const { return time; }
 
+	//
+	// Setters
+	//
+	void Set_time_left(int time_left_) { time_left = time_left_; }
+
 #ifdef DEBUG
 	void output();
 #endif // DEBUG

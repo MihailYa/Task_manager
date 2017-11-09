@@ -11,6 +11,11 @@ void Task_trigger_weekly::calculate_time_left(Time c_time)
 		time.Set_next_weekday(week_day);
 
 	// TO DO: make more effectively
+#ifdef RELESE
+	printf("Make more effectively: Task_trigger_weekly.cpp calculate_time_left()");
+	getch();
+	exit(EXIT_FAILURE);
+#endif // RELESE
 	while (time < c_time)
 	{
 		time += 7 * every_n_week;

@@ -15,6 +15,13 @@ public:
 	void output();
 #endif // DEBUG
 private:
+	/**
+	* Read from file @n bytes and check on errors
+	* @param s - pointer to char buffer
+	* @param n - number of bytes to read
+	*/
+	void read_(char *s, std::streamsize n);
+
 	/*
 	read_task:
 		read_header
@@ -39,10 +46,17 @@ private:
 
 	void skeep_task();
 
+
+#ifdef DEBUG
+public:
+#endif // DEBUG
+	void waiter_cycle();
 	void refresh();
-	//bool stop;
-	//void refresh();
-	//void waiter();
+
+#ifdef DEBUG
+private:
+#endif // DEBUG
+	void waiter();
 
 	std::string m_file_name;
 	/**
@@ -88,5 +102,10 @@ private:
 	std::fstream *m_file;
 	std::vector<Task*> m_Tasks;
 	int m_last_id;
+
+	// Waiter:
+	bool m_stop_waiting;
+	bool m_exit;
+	std::thread *m_waiter_cycle_thread;
 };
 

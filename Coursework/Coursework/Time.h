@@ -22,7 +22,20 @@ public:
 	Time();
 	Time(Time_t time_);
 	Time(unsigned int year_, unsigned int month_, unsigned int day_, unsigned int hours_, unsigned int minutes_);
-	
+	Time(boost::gregorian::date dat_, unsigned int hours_, unsigned int minutes_);
+
+	static Time current_time();
+	/**
+	* Get number of seconds left to nearly new minute
+	* @return number of seconds
+	*/
+	static unsigned int to_minute_left();
+	/**
+	* Get number of minutes left to nearly new hour
+	* @return number of minutes in SECONDS
+	*/
+	static unsigned int to_hour_left();
+
 	//
 	// Setters
 	//
@@ -36,6 +49,7 @@ public:
 	// Getters
 	//
 	boost::gregorian::date Get_dat() const;
+	Time_t Get_time() const;
 
 	//
 	// Operators
@@ -47,7 +61,7 @@ public:
 	const bool operator>=(const Time& right) const;
 	const bool operator<(const Time& right) const;
 	const bool operator==(const Time& right) const;
-	const bool operator!= (const Time& right) const;
+	const bool operator!=(const Time& right) const;
 
 #ifdef DEBUG
 	void output();

@@ -7,3 +7,7 @@
 #include <boost/date_time/gregorian/gregorian.hpp>
 #include <string>
 #include <fstream>
+#include <time.h>
+
+// For debug:
+#include <conio.h>
