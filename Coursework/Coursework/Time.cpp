@@ -13,12 +13,17 @@ Time::Time(unsigned int year_, unsigned int month_, unsigned int day_, unsigned 
 {
 	if (year_ < 1400 || month_ <= 0 || month_ > 12 || day_ > boost::gregorian::date(year_, month_, 1).end_of_month().day() || hours_ >= 24 || minutes_ >= 60)
 	{
-		exit(EXIT_FAILURE);
+		throw Task_Exception(WrongTimeFormat);
 	}
 
 	time.dat = boost::gregorian::date(year_, month_, day_);
 	time.hours = hours_;
 	time.minutes = minutes_;
+}
+
+Time::Time(boost::gregorian::date dat_, unsigned int hours_, unsigned int minutes_)
+	: time(dat_, hours_, minutes_)
+{
 }
 
 Time Time::current_time()
@@ -51,8 +56,8 @@ unsigned int Time::to_hour_left()
 	tm *tm_c_time;
 	tm_c_time = std::localtime(&c_time);
 
-	unsigned int n_sec, n_min, n;
-	if (tm_c_time->tm_min == 0 || tm_c_time->tm_sec == 0)
+	unsigned int n_sec = 0, n_min = 0, n;
+	if (tm_c_time->tm_min == 0 && tm_c_time->tm_sec == 0)
 		n = 0;
 	else
 	{

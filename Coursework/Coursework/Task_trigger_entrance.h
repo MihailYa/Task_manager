@@ -6,6 +6,12 @@ class Task_trigger_entrance :
 {
 public:
 	Task_trigger_entrance(Time time_, unsigned int priority_);
-	void calculate_time_left(Time c_time);
+
+	/**
+	* Caclulate time left
+	* @param c_time - time for which calculations must be done
+	* @return false if trigger must be deleted(because it would never work)
+	*/
+	bool calculate_time_left(Time c_time);
 };
 

@@ -5,7 +5,7 @@ Task_trigger_weekly::Task_trigger_weekly(Time time_, unsigned int priority_, boo
 {
 }
 
-void Task_trigger_weekly::calculate_time_left(Time c_time)
+bool Task_trigger_weekly::calculate_time_left(Time c_time)
 {
 	if (time < c_time)
 		time.Set_next_weekday(week_day);
@@ -22,4 +22,6 @@ void Task_trigger_weekly::calculate_time_left(Time c_time)
 	}
 
 	time_left = time - c_time;
+
+	return true;
 }

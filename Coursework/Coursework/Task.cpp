@@ -25,12 +25,18 @@ Task::~Task()
 	}
 }
 
-void Task::calculate_time_left(Time c_time)
+bool Task::calculate_time_left(Time c_time)
 {
 	if (c_time == last_time)
+	{
 		trigger->Set_time_left(INF);
+		if (trigger->Get_type() == ONCE)
+			return false;
+	}
 	else
-		trigger->calculate_time_left(c_time);
+		return trigger->calculate_time_left(c_time);
+
+	return true;
 }
 
 void Task::make_act()
@@ -71,7 +77,7 @@ void Task::output()
 		s2 = ((Task_act_prog*)act)->Get_prog_params();
 		break;
 	default:
-		exit(EXIT_FAILURE);
+		throw Task_Exception(WrongActType);
 		break;
 	}
 	printf("\nName:\n%s\nText:\n%s\n", s1.c_str(), s2.c_str());

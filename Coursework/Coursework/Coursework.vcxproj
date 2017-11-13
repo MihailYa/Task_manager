@@ -152,6 +152,7 @@
     <ClCompile Include="Task_act.cpp" />
     <ClCompile Include="Task_act_alert.cpp" />
     <ClCompile Include="Task_act_prog.cpp" />
+    <ClCompile Include="Task_Exception.cpp" />
     <ClCompile Include="Task_Manager.cpp" />
     <ClCompile Include="Task_trigger.cpp" />
     <ClCompile Include="Task_trigger_dayly.cpp" />
@@ -168,6 +169,7 @@
     <ClInclude Include="Task_act.h" />
     <ClInclude Include="Task_act_alert.h" />
     <ClInclude Include="Task_act_prog.h" />
+    <ClInclude Include="Task_Exception.h" />
     <ClInclude Include="Task_Manager.h" />
     <ClInclude Include="Task_trigger.h" />
     <ClInclude Include="Task_trigger_dayly.h" />

@@ -1,6 +1,7 @@
 #include "Task_Manager.h"
 
 Task_Manager::Task_Manager(const char* file_name_)
+	: m_refresh_started(false), m_create_task_started(false), m_delete_task_started(false)
 {
 #ifdef DEBUG
 	printf("\nReading tasks...");
@@ -8,18 +9,22 @@ Task_Manager::Task_Manager(const char* file_name_)
 
 	m_last_id = -1;
 	m_file_name = file_name_;
-	m_file = new std::fstream(m_file_name, std::ifstream::in | std::ifstream::binary);
-	
-	if (!m_file->is_open())
+	m_file = new std::fstream;
+
+	unsigned int n = 0; // Number of tasks
+
+	if (is_corrupted())
 	{
-		printf("\nError: can't open file.\n");
-		getch();
-		exit(EXIT_FAILURE);
+		// Trunc file
+		open_(std::ios::out | std::ios::binary);
+		m_file->write((char*)&n, sizeof(unsigned int));
+		m_file->close();
 	}
+	
+	open_(std::ios::in | std::ios::binary);
 
 	m_file->seekg(0, std::ios::beg);
 
-	unsigned int n; // Number of tasks
 	read_((char*)&n, sizeof(unsigned int));
 
 	// Read tasks
@@ -33,8 +38,6 @@ Task_Manager::Task_Manager(const char* file_name_)
 	m_last_id = n - 1;
 
 	m_file->close();
-	delete m_file;
-	m_file = nullptr;
 
 #ifdef DEBUG
 	printf("\n%d tasks was read.\n", n);
@@ -42,31 +45,150 @@ Task_Manager::Task_Manager(const char* file_name_)
 
 	m_exit = false;
 	m_waiter_cycle_thread = new std::thread(&Task_Manager::waiter_cycle, this);
-
-	//waiter = new std::thread(&Task_Manager::Listener, this);
 }
 
 Task_Manager::~Task_Manager()
 {
+	if (m_file == nullptr)
+	{
+		throw Task_Exception(ConfigFileAlreadyDeleted);
+	}
+	delete m_file;
+	m_file = nullptr;
+
 	m_exit = true;
 	for (int i = 0; i < m_Tasks.size(); i++)
 	{
 		if (m_Tasks[i] == nullptr)
-			exit(EXIT_FAILURE);
+		{
+			throw Task_Exception(TaskAlreadyDeleted);
+		}
 		delete m_Tasks[i];
 	}
 	m_waiter_cycle_thread->join();
+	if (m_waiter_cycle_thread == nullptr)
+	{
+		throw Task_Exception(WaiterThreadCycleAlreadyDeleted);
+	}
 	delete m_waiter_cycle_thread;
 }
 
 void Task_Manager::create_task(Task_header_t header, Task_trigger *&trigger, Task_act *&act)
 {
+	bool try_again;
+	do
+	{
+		try_again = false;
+
+		try
+		{
+			create_task_private(header, trigger, act);
+		}
+		catch (Task_Exception &e)
+		{
+			if (m_file->is_open())
+				m_file->close();
+
+			if (m_waiter_cycle_thread == nullptr)
+			{
+				m_exit = false;
+				m_waiter_cycle_thread = new std::thread(&Task_Manager::waiter_cycle, this);
+			}
+			m_create_task_started = false;
+
+			if (e.Get_error_code() == TryAgain || e.Get_error_code() == WaiterThreadCycleAlreadyDeleted)
+				try_again = true;
+			else
+				throw e;
+		}
+
+	} while (try_again);
+}
+
+void Task_Manager::delete_task(unsigned int id_)
+{
+	bool try_again;
+	do
+	{
+		try_again = false;
+
+		try
+		{
+			delete_task_private(id_, false);
+		}
+		catch (Task_Exception &e)
+		{
+			if (m_file->is_open())
+				m_file->close();
+
+			if (m_waiter_cycle_thread == nullptr)
+			{
+				m_exit = false;
+				m_waiter_cycle_thread = new std::thread(&Task_Manager::waiter_cycle, this);
+			}
+
+			m_delete_task_started = false;
+			if (e.Get_error_code() == TryAgain || e.Get_error_code() == WaiterThreadCycleAlreadyDeleted)
+				try_again = true;
+			else
+				throw e;
+		}
+
+	} while (try_again);
+}
+
+#ifdef DEBUG
+void Task_Manager::output()
+{
+
+	for (int i = 0; i < m_Tasks.size(); i++)
+	{
+		printf("\n==========\nTask #%d", i);
+		m_Tasks[i]->output();
+	}
+}
+#endif //DEBUG
+
+
+
+//
+// private:
+//
+void Task_Manager::create_task_private(Task_header_t header, Task_trigger *&trigger, Task_act *&act)
+{
+	// Wait until list was leaved
+	while (m_delete_task_started || m_create_task_started || m_refresh_started);
+
+	m_create_task_started = true;
+
+	if (m_delete_task_started || m_refresh_started || !m_create_task_started)
+	{
+		throw Task_Exception(TryAgain);
+	}
 #ifdef DEBUG
 	printf("\nCreating task...");
 #endif // DEBUG
-	header.id = ++m_last_id;
 
-	m_file = new std::fstream(m_file_name, std::ios::in | std::ios::out | std::ios::binary);
+	if (m_waiter_cycle_thread != nullptr)
+	{
+		m_exit = true;
+		while (!m_waiter_cycle_thread->joinable());
+		m_waiter_cycle_thread->join();
+		delete m_waiter_cycle_thread;
+		m_waiter_cycle_thread = nullptr;
+	}
+	else
+	{
+		throw Task_Exception(WaiterThreadCycleAlreadyDeleted);
+	}
+
+	if (!trigger->calculate_time_left(Time::current_time()))
+	{
+		throw Task_Exception(WrongTime);
+	}
+
+	header.id = ++m_last_id;
+	open_(std::ios::in | std::ios::out | std::ios::binary);
 
 	// Write number of tasks
 	m_file->seekp(0, std::ios::beg);
@@ -81,9 +203,6 @@ void Task_Manager::create_task(Task_header_t header, Task_trigger *&trigger, Tas
 
 	m_file->close();
 
-	delete m_file;
-	m_file = nullptr;
-
 	// Add task in list
 	Task *tmp = new Task(header, trigger, act);
 	m_Tasks.push_back(tmp);
@@ -92,23 +211,53 @@ void Task_Manager::create_task(Task_header_t header, Task_trigger *&trigger, Tas
 	printf("\nTask was create.\n");
 #endif // DEBUG
 
-	m_stop_waiting = true;
+	if (m_waiter_cycle_thread == nullptr)
+	{
+		m_exit = false;
+		m_waiter_cycle_thread = new std::thread(&Task_Manager::waiter_cycle, this);
+	}
+
+	m_create_task_started = false;
 }
 
-void Task_Manager::delete_task(unsigned int id_)
+void Task_Manager::delete_task_private(unsigned int id_, bool from_waiter)
 {
+	while (m_delete_task_started || m_create_task_started || m_refresh_started && !from_waiter);
+
+	m_delete_task_started = true;
+
+	if (!m_delete_task_started || m_refresh_started && !from_waiter || m_create_task_started)
+	{
+		throw Task_Exception(TryAgain);
+	}
+
+	if (m_waiter_cycle_thread != nullptr)
+	{
+		if (!from_waiter)
+		{
+			m_exit = true;
+			while (!m_waiter_cycle_thread->joinable());
+			m_waiter_cycle_thread->join();
+			delete m_waiter_cycle_thread;
+			m_waiter_cycle_thread = nullptr;
+		}
+	}
+	else
+	{
+		throw Task_Exception(WaiterThreadCycleAlreadyDeleted);
+	}
+
 #ifdef DEBUG
 	printf("\nDeleting task...");
 #endif // DEBUG
 	if (id_ > m_last_id)
 	{
-		printf("Error: delete_task\nTask with id=%d does not exist.\n", id_);
-		getch();
-		exit(EXIT_FAILURE);
+		throw Task_Exception(TaskIdDoesNotExist);
 	}
 
 	unsigned int n; // Number of tasks
-	m_file = new std::fstream(m_file_name, std::ios::in | std::ios::out | std::ios::binary);
+
+	open_(std::ios::in | std::ios::out | std::ios::binary);
 
 	// Change number of tasks
 	n = m_last_id;
@@ -130,33 +279,29 @@ void Task_Manager::delete_task(unsigned int id_)
 
 	unsigned int rest_file_size = file_size - end_of_task;
 	m_file->seekg(end_of_task);
-	
+
 	char *rest_file = new char[rest_file_size];
 	read_(rest_file, rest_file_size);
 
 	m_file->seekp(begin_of_task, std::ios::beg);
 	m_file->write(rest_file, rest_file_size);
 	delete[] rest_file;
-	
+
 	m_file->seekg(0, std::ios::beg);
 	file_size -= end_of_task - begin_of_task;
 	char *all_file = new char[file_size];
 	read_(all_file, file_size);
 
 	m_file->close();
-	delete m_file;
-	m_file = nullptr;
 
 	// Trunc file
-	m_file = new std::fstream(m_file_name, std::ios::out | std::ios::binary);
+	open_(std::ios::out | std::ios::binary);
 
 	m_file->seekp(0, std::ios::beg);
 	m_file->write(all_file, file_size);
 	delete[] all_file;
 
 	m_file->close();
-	delete m_file;
-	m_file = nullptr;
 
 	std::vector<Task*>::iterator elem = find_task_by_id(id_);
 	if (*elem != nullptr)
@@ -166,7 +311,7 @@ void Task_Manager::delete_task(unsigned int id_)
 		m_Tasks.erase(elem);
 	}
 	else
-		exit(EXIT_FAILURE);
+		throw Task_Exception(TaskIdDoesNotFound);
 
 	for (int i = 0; i < m_Tasks.size(); ++i)
 	{
@@ -174,35 +319,91 @@ void Task_Manager::delete_task(unsigned int id_)
 			--*m_Tasks[i];
 	}
 
-	m_stop_waiting = true;
-}
-
-#ifdef DEBUG
-void Task_Manager::output()
-{
-
-	for (int i = 0; i < m_Tasks.size(); i++)
+	if (m_waiter_cycle_thread == nullptr)
 	{
-		printf("\n==========\nTask #%d", i);
-		m_Tasks[i]->output();
+		m_exit = false;
+		m_waiter_cycle_thread = new std::thread(&Task_Manager::waiter_cycle, this);
 	}
+
+	m_delete_task_started = false;
 }
-#endif //DEBUG
+
+void Task_Manager::delete_task_waiter(unsigned int id_)
+{
+	bool try_again;
+	do
+	{
+		try_again = false;
+
+		try
+		{
+			delete_task_private(id_, true);
+		}
+		catch (Task_Exception &e)
+		{
+			if (m_file->is_open())
+				m_file->close();
+
+			m_delete_task_started = false;
+			if (e.Get_error_code() == TryAgain)
+				try_again = true;
+			else
+				throw e;
+		}
+
+	} while (try_again);
+}
 
 
-
-//
-// private:
-//
 void Task_Manager::read_(char *s, std::streamsize n)
 {
 	m_file->read(s, n);
 	if ((m_file->rdstate() & std::ios::eofbit) != 0)
 	{
-		printf("\nError: eof was reached.\n");
-		getch();
-		exit(EXIT_FAILURE);
+		throw Task_Exception(EndOfFileWasReached);
 	}
+}
+
+void Task_Manager::open_(unsigned int mode_)
+{
+	if (m_file->is_open())
+	{
+		throw Task_Exception(ConfigFileAlreadyOpened);
+	}
+
+	m_file->open(m_file_name, mode_);
+
+	if (!m_file->is_open())
+	{
+		throw Task_Exception(CanNotOpenConfigFile);
+	}
+}
+
+
+bool Task_Manager::is_corrupted()
+{
+	open_(std::ios::in | std::ios::binary);
+
+	try
+	{
+		unsigned int n;
+		read_((char*)&n, sizeof(unsigned int));
+		
+		for (int i = 0; i < n; ++i)
+			skeep_task();
+
+		m_file->close();
+	}
+	catch (Task_Exception &e)
+	{
+		if (e.Get_error_code() == EndOfFileWasReached)
+		{
+			m_file->close();
+			return true;
+		}
+	}
+
+	return false;
 }
 
 
@@ -277,20 +478,23 @@ Task_trigger*& Task_Manager::read_trigger()
 	}
 	else if (trigger_type == MONTHLY)
 	{
-		//
-		//	There is may be error with vector, if we pass 1 element
-		//
 		unsigned int n;
 		read_((char*)&n, sizeof(unsigned int));
-		boost::date_time::months_of_year *monthes = new boost::date_time::months_of_year[n];
-		read_((char*)&monthes, n * sizeof(boost::date_time::months_of_year));
-		m_vec = std::vector<boost::date_time::months_of_year>(monthes, monthes + n - 1);
-		delete[] monthes;
+		boost::date_time::months_of_year *months = new boost::date_time::months_of_year[n];
+		read_((char*)&months, n * sizeof(boost::date_time::months_of_year));
+		if (n == 1)
+			m_vec.push_back(months[0]);
+		else
+			m_vec = std::vector<boost::date_time::months_of_year>(months, months + n - 1);
+		delete[] months;
 
 		read_((char*)&n, sizeof(unsigned int));
 		unsigned int *days = new unsigned int[n];
 		read_((char*)&days, n * sizeof(unsigned int));
-		d_vec = std::vector<unsigned int>(days, days + n - 1);
+		if (n == 1)
+			d_vec.push_back(days[0]);
+		else
+			d_vec = std::vector<unsigned int>(days, days + n - 1);
 		delete[] days;
 	}
 
@@ -312,7 +516,7 @@ Task_trigger*& Task_Manager::read_trigger()
 		trigger = new Task_trigger_entrance(time, priority);
 		break;
 	default:
-		exit(EXIT_FAILURE);
+		throw Task_Exception(WrongTriggerType);
 	}
 
 	return trigger;
@@ -360,7 +564,7 @@ Task_act*& Task_Manager::read_act()
 		act = new Task_act_alert(str1, str2);
 		break;
 	default:
-		exit(EXIT_FAILURE);
+		throw Task_Exception(WrongActType);
 		break;
 	}
 
@@ -523,16 +727,21 @@ void Task_Manager::waiter_cycle()
 
 void Task_Manager::refresh()
 {
+	while (m_create_task_started || m_delete_task_started);
+	m_refresh_started = true;
 #ifdef DEBUG
 	printf("\nRefresh task list...");
 #endif // DEBUG
-	
 	Time c_time = Time::current_time();
 	int n = m_Tasks.size();
-
 	for (int i = 0; i < n; ++i)
 	{
-		m_Tasks[i]->calculate_time_left(c_time);
+		if (!m_Tasks[i]->calculate_time_left(c_time))
+		{
+			delete_task_waiter(m_Tasks[i]->Get_id());
+			--i;
+			--n;
+		}
 	}
 
 	if (n <= 1)
@@ -540,12 +749,16 @@ void Task_Manager::refresh()
 #ifdef DEBUG
 		printf("\nTasks list has been refreshed.\n");
 #endif // DEBUG
+		m_refresh_started = false;
 		return;
 	}
+
 	std::sort(m_Tasks.begin(), m_Tasks.end(), Task::compare);
 #ifdef DEBUG
 	printf("\nTasks list has been refreshed.\n");
 #endif // DEBUG
+
+	m_refresh_started = false;
 }
 
 void Task_Manager::waiter()
@@ -555,7 +768,9 @@ void Task_Manager::waiter()
 #endif // DEBUG
 	unsigned int to_wait;
 	if (m_Tasks.size() != 0)
-		to_wait = m_Tasks[0]->Get_time_left()*60;
+	{
+		to_wait = m_Tasks[0]->Get_time_left();
+	}
 	else
 		to_wait = INF;
 
@@ -576,6 +791,7 @@ void Task_Manager::waiter()
 		return;
 	}
 
+	to_wait *= 60;
 	seconds = Time::to_minute_left();
 	if (seconds != 0)
 	{

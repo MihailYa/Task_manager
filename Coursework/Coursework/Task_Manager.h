@@ -8,6 +8,7 @@ public:
 	Task_Manager(const char* file_name_);
 	~Task_Manager();
 
+
 	void create_task(Task_header_t header, Task_trigger *&trigger, Task_act *&act);
 	void delete_task(unsigned int id_);
 
@@ -15,12 +16,21 @@ public:
 	void output();
 #endif // DEBUG
 private:
+	void create_task_private(Task_header_t header, Task_trigger *&trigger, Task_act *&act);
+	void delete_task_private(unsigned int id_, bool from_waiter);
+
+	void delete_task_waiter(unsigned int id_);
+
+
 	/**
 	* Read from file @n bytes and check on errors
 	* @param s - pointer to char buffer
 	* @param n - number of bytes to read
 	*/
 	void read_(char *s, std::streamsize n);
+	void open_(unsigned int mode_);
+
+	bool is_corrupted();
 
 	/*
 	read_task:
@@ -107,5 +117,11 @@ private:
 	bool m_stop_waiting;
 	bool m_exit;
 	std::thread *m_waiter_cycle_thread;
+
+	// Functions states:
+	bool m_create_task_started;
+	bool m_delete_task_started;
+	bool m_refresh_started;
+	bool m_waiter_started;
 };
 

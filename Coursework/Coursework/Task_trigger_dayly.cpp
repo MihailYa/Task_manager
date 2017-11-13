@@ -5,8 +5,10 @@ Task_trigger_dayly::Task_trigger_dayly(Time time_, unsigned int priority_)
 {
 }
 
-void Task_trigger_dayly::calculate_time_left(Time c_time)
+bool Task_trigger_dayly::calculate_time_left(Time c_time)
 {
 	time.Set_dat(c_time.Get_dat());
 	time_left = time - c_time;
+
+	return true;
 }

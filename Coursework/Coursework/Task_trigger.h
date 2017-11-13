@@ -23,7 +23,12 @@ public:
 
 	const bool operator<(const Task_trigger &right) const;
 
-	virtual void calculate_time_left(Time c_time) = 0;
+	/**
+	* Caclulate time left
+	* @param c_time - time for which calculations must be done
+	* @return false if trigger must be deleted(because it would never work)
+	*/
+	virtual bool calculate_time_left(Time c_time) = 0;
 
 	//
 	//	Getters
@@ -46,6 +51,6 @@ protected:
 	Trigger_type_t type;
 	Time time;
 	unsigned int priority;
-	int time_left; // In minutes
+	unsigned int time_left; // In minutes
 };
 

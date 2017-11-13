@@ -22,7 +22,12 @@ public:
 	Task(Task_header_t header_, Task_trigger *&trigger_, Task_act *&act_);
 	~Task();
 
-	void calculate_time_left(Time c_time);
+	/**
+	* Caclulate time left for trigger
+	* @param c_time - time for which calculations must be done
+	* @return false if task must be deleted(because it would never be done)
+	*/
+	bool calculate_time_left(Time c_time);
 	void make_act();
 	
 	static const bool compare(const Task *left, const Task *right);
@@ -31,7 +36,12 @@ public:
 	// Getters
 	//
 	unsigned int Get_id() const { return header.id; }
-	unsigned int Get_time_left() const { return trigger->Get_time_left(); }
+	int Get_time_left() const { return trigger->Get_time_left(); }
+
+#ifdef DEBUG
+	Task_trigger* Get_trigger() const { return trigger; }
+#endif // DEBUG
+
 
 	//
 	// Setters

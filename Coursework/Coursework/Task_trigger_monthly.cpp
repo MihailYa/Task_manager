@@ -7,10 +7,12 @@ Task_trigger_monthly::Task_trigger_monthly(Time time_, unsigned int priority_, c
 {
 }
 
-void Task_trigger_monthly::calculate_time_left(Time c_time)
+bool Task_trigger_monthly::calculate_time_left(Time c_time)
 {
 	time.Set_dat(c_time.Get_dat());
 	time.Set_next_month_day(month_list, days_list);
 
 	time_left = time - c_time;
+
+	return true;
 }
