@@ -6,7 +6,7 @@ class Task_Manager
 {
 public:
 	Task_Manager(const char* file_name_);
-	~Task_Manager();
+	~Task_Manager() throw();
 
 
 	void create_task(Task_header_t header, Task_trigger *&trigger, Task_act *&act);
@@ -116,7 +116,10 @@ private:
 	// Waiter:
 	bool m_stop_waiting;
 	bool m_exit;
-	std::thread *m_waiter_cycle_thread;
+	//System::Threading::Thread ^m_waiter_cycle_thread;
+	//std::thread *m_waiter_cycle_thread;
+	//gcroot<System::Threading::Thread ^> m_waiter_cycle_thread;
+	boost::thread *m_waiter_cycle_thread;
 
 	// Functions states:
 	bool m_create_task_started;

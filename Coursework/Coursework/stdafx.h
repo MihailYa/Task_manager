@@ -1,10 +1,11 @@
 #pragma once
 
-#include <thread>
+//#include <thread>
 //#include <dos.h>
 #include <vector>
 #include <windows.h>
 #include <boost/date_time/gregorian/gregorian.hpp>
+#include <boost/thread.hpp>
 #include <string>
 #include <fstream>
 #include <time.h>

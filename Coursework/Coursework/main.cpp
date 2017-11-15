@@ -67,16 +67,16 @@ int main()
 		m->create_task(header3, trig3, act3);
 
 		//m.refresh();
-		getch();
+		_getch();
 		m->output();
-		getch();
+		_getch();
 	}
 	catch(Task_Exception &e)
 	{
 		std::cout << e.Get_as_string_with_solution();
-		getch();
+		_getch();
 		m->output();
-		getch();
+		_getch();
 	}
 
 	
@@ -109,7 +109,7 @@ int main()
 
 	delete t;*/
 
-	getch();
+	_getch();
 	return 0;
 }
 

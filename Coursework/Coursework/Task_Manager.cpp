@@ -6,7 +6,7 @@ Task_Manager::Task_Manager(const char* file_name_)
 #ifdef DEBUG
 	printf("\nReading tasks...");
 #endif // DEBUG
-
+	
 	m_last_id = -1;
 	m_file_name = file_name_;
 	m_file = new std::fstream;
@@ -30,7 +30,7 @@ Task_Manager::Task_Manager(const char* file_name_)
 	// Read tasks
 	Task *tmp;
 
-	for (int i = 0; i < n; i++)
+	for (unsigned int i = 0; i < n; i++)
 	{
 		tmp = read_task(i);
 		m_Tasks.push_back(tmp);
@@ -44,10 +44,12 @@ Task_Manager::Task_Manager(const char* file_name_)
 #endif // DEBUG
 
 	m_exit = false;
-	m_waiter_cycle_thread = new std::thread(&Task_Manager::waiter_cycle, this);
+	m_waiter_cycle_thread = new boost::thread(boost::bind(&Task_Manager::waiter_cycle, this));
+	//m_waiter_cycle_thread = gcnew System::Threading::Thread(gcnew System::Threading::ThreadStart(this, Task_Manager::waiter_cycle));
+	//m_waiter_cycle_thread->Start();
 }
 
-Task_Manager::~Task_Manager()
+Task_Manager::~Task_Manager() throw()
 {
 	if (m_file == nullptr)
 	{
@@ -57,7 +59,7 @@ Task_Manager::~Task_Manager()
 	m_file = nullptr;
 
 	m_exit = true;
-	for (int i = 0; i < m_Tasks.size(); i++)
+	for (unsigned int i = 0; i < m_Tasks.size(); i++)
 	{
 		if (m_Tasks[i] == nullptr)
 		{
@@ -71,6 +73,7 @@ Task_Manager::~Task_Manager()
 		throw Task_Exception(WaiterThreadCycleAlreadyDeleted);
 	}
 	delete m_waiter_cycle_thread;
+	m_waiter_cycle_thread = nullptr;
 }
 
 void Task_Manager::create_task(Task_header_t header, Task_trigger *&trigger, Task_act *&act)
@@ -92,7 +95,9 @@ void Task_Manager::create_task(Task_header_t header, Task_trigger *&trigger, Tas
 			if (m_waiter_cycle_thread == nullptr)
 			{
 				m_exit = false;
-				m_waiter_cycle_thread = new std::thread(&Task_Manager::waiter_cycle, this);
+				m_waiter_cycle_thread = new boost::thread(boost::bind(&Task_Manager::waiter_cycle, this));
+				//m_waiter_cycle_thread = gcnew System::Threading::Thread(this->Task_Manager::waiter_cycle);
+				//m_waiter_cycle_thread->Start();
 			}
 			m_create_task_started = false;
 
@@ -124,7 +129,9 @@ void Task_Manager::delete_task(unsigned int id_)
 			if (m_waiter_cycle_thread == nullptr)
 			{
 				m_exit = false;
-				m_waiter_cycle_thread = new std::thread(&Task_Manager::waiter_cycle, this);
+				m_waiter_cycle_thread = new boost::thread(boost::bind(&Task_Manager::waiter_cycle, this));
+				//m_waiter_cycle_thread = gcnew System::Threading::Thread(this->Task_Manager::waiter_cycle);
+				//m_waiter_cycle_thread->Start();
 			}
 
 			m_delete_task_started = false;
@@ -141,7 +148,7 @@ void Task_Manager::delete_task(unsigned int id_)
 void Task_Manager::output()
 {
 
-	for (int i = 0; i < m_Tasks.size(); i++)
+	for (unsigned int i = 0; i < m_Tasks.size(); i++)
 	{
 		printf("\n==========\nTask #%d", i);
 		m_Tasks[i]->output();
@@ -172,7 +179,7 @@ void Task_Manager::create_task_private(Task_header_t header, Task_trigger *&trig
 	if (m_waiter_cycle_thread != nullptr)
 	{
 		m_exit = true;
-		while (!m_waiter_cycle_thread->joinable());
+		//while (!m_waiter_cycle_thread->joinable());
 		m_waiter_cycle_thread->join();
 		delete m_waiter_cycle_thread;
 		m_waiter_cycle_thread = nullptr;
@@ -214,7 +221,9 @@ void Task_Manager::create_task_private(Task_header_t header, Task_trigger *&trig
 	if (m_waiter_cycle_thread == nullptr)
 	{
 		m_exit = false;
-		m_waiter_cycle_thread = new std::thread(&Task_Manager::waiter_cycle, this);
+		m_waiter_cycle_thread = new boost::thread(boost::bind(&Task_Manager::waiter_cycle, this));
+		//m_waiter_cycle_thread = gcnew System::Threading::Thread(this->Task_Manager::waiter_cycle);
+		//m_waiter_cycle_thread->Start();
 	}
 
 	m_create_task_started = false;
@@ -236,7 +245,7 @@ void Task_Manager::delete_task_private(unsigned int id_, bool from_waiter)
 		if (!from_waiter)
 		{
 			m_exit = true;
-			while (!m_waiter_cycle_thread->joinable());
+			//while (!m_waiter_cycle_thread->joinable());
 			m_waiter_cycle_thread->join();
 			delete m_waiter_cycle_thread;
 			m_waiter_cycle_thread = nullptr;
@@ -250,7 +259,7 @@ void Task_Manager::delete_task_private(unsigned int id_, bool from_waiter)
 #ifdef DEBUG
 	printf("\nDeleting task...");
 #endif // DEBUG
-	if (id_ > m_last_id)
+	if ((int)id_ > m_last_id)
 	{
 		throw Task_Exception(TaskIdDoesNotExist);
 	}
@@ -267,17 +276,17 @@ void Task_Manager::delete_task_private(unsigned int id_, bool from_waiter)
 
 	// Skeep tasks before id_ task
 	m_file->seekg(sizeof(unsigned int), std::ios::beg);
-	for (int i = 0; i < id_; i++)
+	for (unsigned int i = 0; i < id_; i++)
 		skeep_task();
 
-	unsigned int begin_of_task = m_file->tellg();
+	std::streamoff begin_of_task = m_file->tellg();
 	skeep_task();
-	unsigned int end_of_task = m_file->tellg();
+	std::streamoff end_of_task = m_file->tellg();
 
 	m_file->seekg(0, std::ios::end);
-	unsigned int file_size = m_file->tellg();
+	std::streamoff file_size = m_file->tellg();
 
-	unsigned int rest_file_size = file_size - end_of_task;
+	std::streamoff rest_file_size = file_size - end_of_task;
 	m_file->seekg(end_of_task);
 
 	char *rest_file = new char[rest_file_size];
@@ -313,7 +322,7 @@ void Task_Manager::delete_task_private(unsigned int id_, bool from_waiter)
 	else
 		throw Task_Exception(TaskIdDoesNotFound);
 
-	for (int i = 0; i < m_Tasks.size(); ++i)
+	for (unsigned int i = 0; i < m_Tasks.size(); ++i)
 	{
 		if (m_Tasks[i]->Get_id() > id_)
 			--*m_Tasks[i];
@@ -322,7 +331,9 @@ void Task_Manager::delete_task_private(unsigned int id_, bool from_waiter)
 	if (m_waiter_cycle_thread == nullptr)
 	{
 		m_exit = false;
-		m_waiter_cycle_thread = new std::thread(&Task_Manager::waiter_cycle, this);
+		m_waiter_cycle_thread = new boost::thread(boost::bind(&Task_Manager::waiter_cycle, this));
+		//m_waiter_cycle_thread = gcnew System::Threading::Thread(this->Task_Manager::waiter_cycle);
+		//m_waiter_cycle_thread->Start();
 	}
 
 	m_delete_task_started = false;
@@ -389,7 +400,7 @@ bool Task_Manager::is_corrupted()
 		unsigned int n;
 		read_((char*)&n, sizeof(unsigned int));
 		
-		for (int i = 0; i < n; ++i)
+		for (unsigned int i = 0; i < n; ++i)
 			skeep_task();
 
 		m_file->close();
@@ -782,7 +793,7 @@ void Task_Manager::waiter()
 		printf("To wait: INF");
 #endif // DEBUG
 		seconds = Time::to_hour_left();
-		for (int i = 0; i < seconds; ++i)
+		for (unsigned int i = 0; i < seconds; ++i)
 		{
 			if (m_stop_waiting || m_exit)
 				return;
@@ -801,7 +812,7 @@ void Task_Manager::waiter()
 #ifdef DEBUG
 	printf("To wait: %d seconds.\n", to_wait);
 #endif // DEBUG
-	for (int i = 0; i < to_wait; i++)
+	for (unsigned int i = 0; i < to_wait; i++)
 	{
 		if (m_stop_waiting || m_exit)
 			return;

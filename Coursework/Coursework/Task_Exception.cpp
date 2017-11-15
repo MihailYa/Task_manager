@@ -1,7 +1,6 @@
 #include "Task_Exception.h"
 
 
-
 Task_Exception::Task_Exception(Task_Exception_error_code_t error_code_)
 	: error_code(error_code_)
 {
