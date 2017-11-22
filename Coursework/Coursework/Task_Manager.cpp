@@ -1,7 +1,6 @@
 #include "Task_Manager.h"
 
 Task_Manager::Task_Manager(const char* file_name_)
-	: m_refresh_started(false), m_create_task_started(false), m_delete_task_started(false)
 {
 #ifdef DEBUG
 	printf("\nReading tasks...");
@@ -53,7 +52,7 @@ Task_Manager::~Task_Manager() throw()
 {
 	if (m_file == nullptr)
 	{
-		throw Task_Exception(ConfigFileAlreadyDeleted);
+		throw new ConfigFileAlreadyDeleted_ex;
 	}
 	delete m_file;
 	m_file = nullptr;
@@ -63,14 +62,14 @@ Task_Manager::~Task_Manager() throw()
 	{
 		if (m_Tasks[i] == nullptr)
 		{
-			throw Task_Exception(TaskAlreadyDeleted);
+			throw new TaskAlreadyDeleted_ex;
 		}
 		delete m_Tasks[i];
 	}
 	m_waiter_cycle_thread->join();
 	if (m_waiter_cycle_thread == nullptr)
 	{
-		throw Task_Exception(WaiterThreadCycleAlreadyDeleted);
+		throw new WaiterThreadCycleAlreadyDeleted_ex;
 	}
 	delete m_waiter_cycle_thread;
 	m_waiter_cycle_thread = nullptr;
@@ -79,6 +78,7 @@ Task_Manager::~Task_Manager() throw()
 void Task_Manager::create_task(Task_header_t header, Task_trigger *&trigger, Task_act *&act)
 {
 	bool try_again;
+	bool second_try = false;
 	do
 	{
 		try_again = false;
@@ -87,24 +87,41 @@ void Task_Manager::create_task(Task_header_t header, Task_trigger *&trigger, Tas
 		{
 			create_task_private(header, trigger, act);
 		}
-		catch (Task_Exception &e)
+		catch (WaiterThreadCycleAlreadyDeleted_ex *&e)
 		{
 			if (m_file->is_open())
 				m_file->close();
 
+			try_again = true;
+
+			delete e;
+		}
+		catch (ConfigFileAlreadyOpened_ex *&e)
+		{
 			if (m_waiter_cycle_thread == nullptr)
 			{
 				m_exit = false;
 				m_waiter_cycle_thread = new boost::thread(boost::bind(&Task_Manager::waiter_cycle, this));
-				//m_waiter_cycle_thread = gcnew System::Threading::Thread(this->Task_Manager::waiter_cycle);
-				//m_waiter_cycle_thread->Start();
 			}
-			m_create_task_started = false;
+			try_again = true;
 
-			if (e.Get_error_code() == TryAgain || e.Get_error_code() == WaiterThreadCycleAlreadyDeleted)
-				try_again = true;
-			else
-				throw e;
+			delete e;
+		}
+		catch (CanNotOpenConfigFile_ex *&e)
+		{
+			safely_continue();
+			delete e;
+			
+			if (second_try)
+				throw new ConfigFileNotFound_ex;
+
+			second_try = true;
+			try_again = true;
+		}
+		catch (Task_Exception *&e)
+		{
+			safely_continue();
+			throw e;
 		}
 
 	} while (try_again);
@@ -113,6 +130,7 @@ void Task_Manager::create_task(Task_header_t header, Task_trigger *&trigger, Tas
 void Task_Manager::delete_task(unsigned int id_)
 {
 	bool try_again;
+	bool second_try = false;
 	do
 	{
 		try_again = false;
@@ -121,28 +139,329 @@ void Task_Manager::delete_task(unsigned int id_)
 		{
 			delete_task_private(id_, false);
 		}
-		catch (Task_Exception &e)
+		catch (WaiterThreadCycleAlreadyDeleted_ex *&e)
 		{
 			if (m_file->is_open())
 				m_file->close();
+
+			try_again = true;
+
+			delete e;
+		}
+		catch (ConfigFileAlreadyOpened_ex *&e)
+		{
+			if (m_waiter_cycle_thread == nullptr)
+			{
+				m_exit = false;
+				m_waiter_cycle_thread = new boost::thread(boost::bind(&Task_Manager::waiter_cycle, this));
+			}
+			try_again = true;
+
+			delete e;
+		}
+		catch (CanNotOpenConfigFile_ex *&e)
+		{
+			safely_continue();
+			delete e;
+
+			if (second_try)
+				throw new ConfigFileNotFound_ex;
+
+			second_try = true;
+			try_again = true;
+		}
+		catch (TaskIdDoesNotFound_ex *&e)
+		{
+			safely_continue();
+			
+			delete e;
+		}
+		catch (EndOfFileWasReached_ex *&e)
+		{
+			safely_continue();
+			delete e;
+
+			if (is_corrupted())
+				throw new ConfigFileCorrupted_ex;
+		}
+		catch (Task_Exception *&e)
+		{
+			safely_continue();
+			throw e;
+		}
+
+	} while (try_again);
+}
+
+void Task_Manager::import_task(const char *import_file_name_)
+{
+#ifdef DEBUG
+	printf("\nImporting task...");
+#endif // DEBUG
+	bool try_again;
+
+	do
+	{
+		try_again = false;
+		try
+		{
+			if (m_waiter_cycle_thread != nullptr)
+			{
+				m_exit = true;
+				m_waiter_cycle_thread->join();
+				delete m_waiter_cycle_thread;
+				m_waiter_cycle_thread = nullptr;
+			}
+			else
+				throw new WaiterThreadCycleAlreadyDeleted_ex;
+
+			if (m_file->is_open())
+				throw new ConfigFileAlreadyOpened_ex;
+
+			m_file->open(import_file_name_, std::ios::in | std::ios::binary);
+			if (!m_file->is_open())
+				throw new CanNotOpenFile_ex;
+
+			skeep_task();
+
+			// Save file in memory
+			std::streampos file_size = m_file->tellg();
+			m_file->seekg(0, std::ios::beg);
+			char *file = new char[file_size];
+			read_(file, file_size);
+
+			m_file->seekg(0, std::ios::beg);
+			Task *tmp = read_task(++m_last_id);
+			m_file->close();
+			m_Tasks.push_back(tmp);
+
+			// Write task in config file
+			open_(std::ios::in | std::ios::out | std::ios::binary);
+			// Write number of tasks
+			m_file->seekp(0, std::ios::beg);
+			unsigned int n = m_last_id + 1;
+			m_file->write((char*)&n, sizeof(unsigned int));
+
+			m_file->seekp(0, std::ios::end);
+			m_file->write(file, file_size);
+
+			m_file->close();
 
 			if (m_waiter_cycle_thread == nullptr)
 			{
 				m_exit = false;
 				m_waiter_cycle_thread = new boost::thread(boost::bind(&Task_Manager::waiter_cycle, this));
-				//m_waiter_cycle_thread = gcnew System::Threading::Thread(this->Task_Manager::waiter_cycle);
-				//m_waiter_cycle_thread->Start();
+			}
+		}
+		catch (WaiterThreadCycleAlreadyDeleted_ex *&e)
+		{
+			if (m_file->is_open())
+				m_file->close();
+
+			try_again = true;
+			delete e;
+		}
+		catch (ConfigFileAlreadyOpened_ex *&e)
+		{
+			if (m_waiter_cycle_thread == nullptr)
+			{
+				m_exit = false;
+				m_waiter_cycle_thread = new boost::thread(boost::bind(&Task_Manager::waiter_cycle, this));
 			}
 
-			m_delete_task_started = false;
-			if (e.Get_error_code() == TryAgain || e.Get_error_code() == WaiterThreadCycleAlreadyDeleted)
-				try_again = true;
+			try_again = true;
+			delete e;
+		}
+		catch (EndOfFileWasReached_ex *&e)
+		{
+			safely_continue();
+			delete e;
+
+			throw new FileCorrupted_ex;
+		}
+		catch (Task_Exception *&e)
+		{
+			safely_continue();
+			throw e;
+		}
+	} while (try_again);
+
+#ifdef DEBUG
+	printf("\nTask was imported.\n");
+#endif // DEBUG
+}
+
+void Task_Manager::export_task(const char *export_file_name_, unsigned int id_)
+{
+#ifdef DEBUG
+	printf("\nExporting task...");
+#endif // DEBUG
+	bool try_again;
+	bool second_try = false;
+	char *file = nullptr;
+
+	do
+	{
+		try_again = false;
+		try
+		{
+			if (id_ > m_last_id)
+				throw new TaskIdDoesNotExist_ex;
+
+			if (m_waiter_cycle_thread != nullptr)
+			{
+				m_exit = true;
+				m_waiter_cycle_thread->join();
+				delete m_waiter_cycle_thread;
+				m_waiter_cycle_thread = nullptr;
+			}
 			else
-				throw e;
+				throw new WaiterThreadCycleAlreadyDeleted_ex;
+
+			open_(std::ios::in | std::ios::binary);
+			m_file->seekg(sizeof(unsigned int));
+
+			for (unsigned int i = 0; i < id_; ++i)
+				skeep_task();
+
+			std::streampos task_begin = m_file->tellg();
+			skeep_task();
+			std::streampos task_end = m_file->tellg();
+			unsigned int file_size = task_end - task_begin;
+			file = new char[file_size];
+
+			m_file->seekg(task_begin);
+			read_(file, file_size);
+			m_file->close();
+
+			m_file->open(export_file_name_, std::ios::out | std::ios::binary);
+			if (!m_file->is_open())
+			{
+				throw new CanNotOpenFile_ex;
+			}
+
+			m_file->write(file, file_size);
+			m_file->close();
+
+			if (m_waiter_cycle_thread == nullptr)
+			{
+				m_exit = false;
+				m_waiter_cycle_thread = new boost::thread(boost::bind(&Task_Manager::waiter_cycle, this));
+			}
+		}
+		catch (WaiterThreadCycleAlreadyDeleted_ex *&e)
+		{
+			if (m_file->is_open())
+				m_file->close();
+
+			try_again = true;
+			delete e;
+		}
+		catch (ConfigFileAlreadyOpened_ex *&e)
+		{
+			if (m_waiter_cycle_thread == nullptr)
+			{
+				m_exit = false;
+				m_waiter_cycle_thread = new boost::thread(boost::bind(&Task_Manager::waiter_cycle, this));
+			}
+
+			try_again = true;
+		}
+		catch (CanNotOpenConfigFile_ex *&e)
+		{
+			safely_continue();
+			delete e;
+
+			if (second_try)
+				throw new ConfigFileNotFound_ex;
+
+			second_try = true;
+			try_again = true;
+		}
+		catch (TaskIdDoesNotFound_ex *&e)
+		{
+			safely_continue();
+
+			delete e;
+		}
+		catch (EndOfFileWasReached_ex *&e)
+		{
+			if (file != nullptr)
+			{
+				delete[] file;
+				file = nullptr;
+			}
+			safely_continue();
+			delete e;
+
+			if (is_corrupted())
+				throw new ConfigFileCorrupted_ex;
+		}
+		catch (Task_Exception *&e)
+		{
+			if (file != nullptr)
+			{
+				delete[] file;
+				file = nullptr;
+			}
+			safely_continue();
+			throw e;
 		}
 
 	} while (try_again);
+
+#ifdef DEBUG
+	printf("\nTask was exported.\n");
+#endif // DEBUG
 }
+
+std::vector<Task_Info_t> Task_Manager::Get_task_info()
+{
+	std::vector<Task_Info_t> tasks_info;
+	Task_Info_t tmp;
+
+	bool try_again;
+
+	do
+	{
+		try_again = false;
+		try
+		{
+			if (m_waiter_cycle_thread != nullptr)
+			{
+				m_exit = true;
+				m_waiter_cycle_thread->join();
+				delete m_waiter_cycle_thread;
+				m_waiter_cycle_thread = nullptr;
+			}
+			else
+				throw new WaiterThreadCycleAlreadyDeleted_ex;
+
+			refresh();
+			unsigned int n = m_Tasks.size();
+			for (unsigned int i = 0; i < n; ++i)
+			{
+				tmp.header = m_Tasks[i]->Get_header();
+				tmp.time_left = m_Tasks[i]->Get_time_left();
+				tasks_info.push_back(tmp);
+			}
+
+			if (m_waiter_cycle_thread == nullptr)
+			{
+				m_exit = false;
+				m_waiter_cycle_thread = new boost::thread(boost::bind(&Task_Manager::waiter_cycle, this));
+			}
+		}
+		catch (WaiterThreadCycleAlreadyDeleted_ex *&e)
+		{
+			delete e;
+			try_again = true;
+		}
+	} while (try_again);
+
+	return tasks_info;
+}
+
 
 #ifdef DEBUG
 void Task_Manager::output()
@@ -163,15 +482,6 @@ void Task_Manager::output()
 //
 void Task_Manager::create_task_private(Task_header_t header, Task_trigger *&trigger, Task_act *&act)
 {
-	// Wait until list was leaved
-	while (m_delete_task_started || m_create_task_started || m_refresh_started);
-
-	m_create_task_started = true;
-
-	if (m_delete_task_started || m_refresh_started || !m_create_task_started)
-	{
-		throw Task_Exception(TryAgain);
-	}
 #ifdef DEBUG
 	printf("\nCreating task...");
 #endif // DEBUG
@@ -179,19 +489,18 @@ void Task_Manager::create_task_private(Task_header_t header, Task_trigger *&trig
 	if (m_waiter_cycle_thread != nullptr)
 	{
 		m_exit = true;
-		//while (!m_waiter_cycle_thread->joinable());
 		m_waiter_cycle_thread->join();
 		delete m_waiter_cycle_thread;
 		m_waiter_cycle_thread = nullptr;
 	}
 	else
 	{
-		throw Task_Exception(WaiterThreadCycleAlreadyDeleted);
+		throw new WaiterThreadCycleAlreadyDeleted_ex;
 	}
 
 	if (!trigger->calculate_time_left(Time::current_time()))
 	{
-		throw Task_Exception(WrongTime);
+		throw new WrongTime_ex;
 	}
 
 	header.id = ++m_last_id;
@@ -222,30 +531,16 @@ void Task_Manager::create_task_private(Task_header_t header, Task_trigger *&trig
 	{
 		m_exit = false;
 		m_waiter_cycle_thread = new boost::thread(boost::bind(&Task_Manager::waiter_cycle, this));
-		//m_waiter_cycle_thread = gcnew System::Threading::Thread(this->Task_Manager::waiter_cycle);
-		//m_waiter_cycle_thread->Start();
 	}
-
-	m_create_task_started = false;
 }
 
 void Task_Manager::delete_task_private(unsigned int id_, bool from_waiter)
 {
-	while (m_delete_task_started || m_create_task_started || m_refresh_started && !from_waiter);
-
-	m_delete_task_started = true;
-
-	if (!m_delete_task_started || m_refresh_started && !from_waiter || m_create_task_started)
-	{
-		throw Task_Exception(TryAgain);
-	}
-
 	if (m_waiter_cycle_thread != nullptr)
 	{
 		if (!from_waiter)
 		{
 			m_exit = true;
-			//while (!m_waiter_cycle_thread->joinable());
 			m_waiter_cycle_thread->join();
 			delete m_waiter_cycle_thread;
 			m_waiter_cycle_thread = nullptr;
@@ -253,7 +548,7 @@ void Task_Manager::delete_task_private(unsigned int id_, bool from_waiter)
 	}
 	else
 	{
-		throw Task_Exception(WaiterThreadCycleAlreadyDeleted);
+		throw new WaiterThreadCycleAlreadyDeleted_ex;
 	}
 
 #ifdef DEBUG
@@ -261,7 +556,7 @@ void Task_Manager::delete_task_private(unsigned int id_, bool from_waiter)
 #endif // DEBUG
 	if ((int)id_ > m_last_id)
 	{
-		throw Task_Exception(TaskIdDoesNotExist);
+		throw new TaskIdDoesNotExist_ex;
 	}
 
 	unsigned int n; // Number of tasks
@@ -320,7 +615,7 @@ void Task_Manager::delete_task_private(unsigned int id_, bool from_waiter)
 		m_Tasks.erase(elem);
 	}
 	else
-		throw Task_Exception(TaskIdDoesNotFound);
+		throw new TaskIdDoesNotFound_ex;
 
 	for (unsigned int i = 0; i < m_Tasks.size(); ++i)
 	{
@@ -332,16 +627,14 @@ void Task_Manager::delete_task_private(unsigned int id_, bool from_waiter)
 	{
 		m_exit = false;
 		m_waiter_cycle_thread = new boost::thread(boost::bind(&Task_Manager::waiter_cycle, this));
-		//m_waiter_cycle_thread = gcnew System::Threading::Thread(this->Task_Manager::waiter_cycle);
-		//m_waiter_cycle_thread->Start();
 	}
 
-	m_delete_task_started = false;
 }
 
 void Task_Manager::delete_task_waiter(unsigned int id_)
 {
 	bool try_again;
+	bool second_try = false;
 	do
 	{
 		try_again = false;
@@ -350,19 +643,62 @@ void Task_Manager::delete_task_waiter(unsigned int id_)
 		{
 			delete_task_private(id_, true);
 		}
-		catch (Task_Exception &e)
+		catch (ConfigFileAlreadyOpened_ex *&e)
+		{
+			try_again = true;
+
+			delete e;
+		}
+		catch (CanNotOpenConfigFile_ex *&e)
+		{
+			if (m_file->is_open())
+				m_file->close();
+			delete e;
+
+			if (second_try)
+				throw new ConfigFileNotFound_ex;
+
+			second_try = true;
+			try_again = true;
+		}
+		catch (TaskIdDoesNotFound_ex *&e)
 		{
 			if (m_file->is_open())
 				m_file->close();
 
-			m_delete_task_started = false;
-			if (e.Get_error_code() == TryAgain)
-				try_again = true;
-			else
-				throw e;
+			delete e;
+		}
+		catch (EndOfFileWasReached_ex *&e)
+		{
+			if (m_file->is_open())
+				m_file->close();
+			delete e;
+
+			if (is_corrupted())
+				throw new ConfigFileCorrupted_ex;
+		}
+		catch (Task_Exception *&e)
+		{
+			if (m_file->is_open())
+				m_file->close();
+
+			throw e;
 		}
 
 	} while (try_again);
+}
+
+
+void Task_Manager::safely_continue()
+{
+	if (m_file->is_open())
+		m_file->close();
+
+	if (m_waiter_cycle_thread == nullptr)
+	{
+		m_exit = false;
+		m_waiter_cycle_thread = new boost::thread(boost::bind(&Task_Manager::waiter_cycle, this));
+	}
 }
 
 
@@ -371,7 +707,7 @@ void Task_Manager::read_(char *s, std::streamsize n)
 	m_file->read(s, n);
 	if ((m_file->rdstate() & std::ios::eofbit) != 0)
 	{
-		throw Task_Exception(EndOfFileWasReached);
+		throw new EndOfFileWasReached_ex;
 	}
 }
 
@@ -379,41 +715,59 @@ void Task_Manager::open_(unsigned int mode_)
 {
 	if (m_file->is_open())
 	{
-		throw Task_Exception(ConfigFileAlreadyOpened);
+		throw new ConfigFileAlreadyOpened_ex;
 	}
 
 	m_file->open(m_file_name, mode_);
 
 	if (!m_file->is_open())
 	{
-		throw Task_Exception(CanNotOpenConfigFile);
+		throw new CanNotOpenConfigFile_ex;
 	}
 }
 
 
 bool Task_Manager::is_corrupted()
 {
-	open_(std::ios::in | std::ios::binary);
-
-	try
+	Task_Exception_error_code_t e_code;
+	bool try_again;
+	do
 	{
-		unsigned int n;
-		read_((char*)&n, sizeof(unsigned int));
-		
-		for (unsigned int i = 0; i < n; ++i)
-			skeep_task();
-
-		m_file->close();
-	}
-	catch (Task_Exception &e)
-	{
-		if (e.Get_error_code() == EndOfFileWasReached)
+		try_again = false;
+		try
 		{
+			open_(std::ios::in | std::ios::binary);
+			unsigned int n;
+			read_((char*)&n, sizeof(unsigned int));
+
+			for (unsigned int i = 0; i < n; ++i)
+				skeep_task();
+
 			m_file->close();
+		}
+		catch (ConfigFileAlreadyOpened_ex *&e)
+		{
+			delete e;
+			try_again = true;
+		}
+		catch(CanNotOpenConfigFile_ex *&e)
+		{
+			delete e;
 			return true;
 		}
-	}
+		catch(EndOfFileWasReached_ex *&e)
+		{
+			delete e;
+			return true;
+		}
+		catch (Task_Exception *&e)
+		{
+			if (m_file->is_open())
+				m_file->close();
+			throw e;
+		}
 
+	} while (try_again);
 	return false;
 }
 
@@ -527,7 +881,7 @@ Task_trigger*& Task_Manager::read_trigger()
 		trigger = new Task_trigger_entrance(time, priority);
 		break;
 	default:
-		throw Task_Exception(WrongTriggerType);
+		throw new WrongTriggerType_ex;
 	}
 
 	return trigger;
@@ -575,7 +929,7 @@ Task_act*& Task_Manager::read_act()
 		act = new Task_act_alert(str1, str2);
 		break;
 	default:
-		throw Task_Exception(WrongActType);
+		throw new WrongActType_ex;
 		break;
 	}
 
@@ -738,8 +1092,6 @@ void Task_Manager::waiter_cycle()
 
 void Task_Manager::refresh()
 {
-	while (m_create_task_started || m_delete_task_started);
-	m_refresh_started = true;
 #ifdef DEBUG
 	printf("\nRefresh task list...");
 #endif // DEBUG
@@ -760,7 +1112,6 @@ void Task_Manager::refresh()
 #ifdef DEBUG
 		printf("\nTasks list has been refreshed.\n");
 #endif // DEBUG
-		m_refresh_started = false;
 		return;
 	}
 
@@ -768,8 +1119,6 @@ void Task_Manager::refresh()
 #ifdef DEBUG
 	printf("\nTasks list has been refreshed.\n");
 #endif // DEBUG
-
-	m_refresh_started = false;
 }
 
 void Task_Manager::waiter()

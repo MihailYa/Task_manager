@@ -2,6 +2,12 @@
 #include "stdafx.h"
 #include "Task.h"
 
+struct Task_Info_t
+{
+	Task_header_t header;
+	int time_left;
+};
+
 class Task_Manager
 {
 public:
@@ -12,24 +18,57 @@ public:
 	void create_task(Task_header_t header, Task_trigger *&trigger, Task_act *&act);
 	void delete_task(unsigned int id_);
 
+	void import_task(const char *import_file_name_);
+	void export_task(const char *export_file_name_, unsigned int id_);
+
+	std::vector<Task_Info_t> Get_task_info();
+
 #ifdef DEBUG
 	void output();
 #endif // DEBUG
 private:
+	/**
+	* Create task. This function can be called only from create_task function
+	* @param header - header of task
+	* @param trigger - trigger of task
+	* @param act - action of task
+	* @exceptions WrongTriggerType, WrongActType, WrongTimeFormat, WrongTime
+	*/
 	void create_task_private(Task_header_t header, Task_trigger *&trigger, Task_act *&act);
+
+	/**
+	* Delete task by id. This function can be called only from delete_task and delete_task_waiter functions
+	* @param id_ - id of task to delete
+	* @param from_waiter - if function was called from delete_task_waiter function
+	* @exceptions TaskIdDoesNotExist, ConfigFileCorrupted
+	*/
 	void delete_task_private(unsigned int id_, bool from_waiter);
 
 	void delete_task_waiter(unsigned int id_);
 
+	/**
+	* Safely continue program after exception
+	*/
+	void safely_continue();
 
 	/**
 	* Read from file @n bytes and check on errors
 	* @param s - pointer to char buffer
 	* @param n - number of bytes to read
+	* @exceptions EndOfFileWasReached
 	*/
 	void read_(char *s, std::streamsize n);
+	/**
+	* Open file with path m_file_name
+	* @param mode_ mode of opening
+	* @exceptions ConfigFileAlreadyOpened, CanNotOpenConfigFile
+	*/
 	void open_(unsigned int mode_);
 
+	/**
+	* Check if configuration file is corrupted
+	* @return true if file corrupted
+	*/
 	bool is_corrupted();
 
 	/*
@@ -120,11 +159,5 @@ private:
 	//std::thread *m_waiter_cycle_thread;
 	//gcroot<System::Threading::Thread ^> m_waiter_cycle_thread;
 	boost::thread *m_waiter_cycle_thread;
-
-	// Functions states:
-	bool m_create_task_started;
-	bool m_delete_task_started;
-	bool m_refresh_started;
-	bool m_waiter_started;
 };
 

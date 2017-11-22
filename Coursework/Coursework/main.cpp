@@ -59,21 +59,24 @@ int main()
 		m.create_task(header4, trig4, act4);*/
 
 
-		Task_header_t header3;
+		/*Task_header_t header3;
 		header3.name = "Task number tree";
 		header3.desc = "And some desc fo this(3 task";
 		Task_trigger *trig3 = new Task_trigger_once(Time(2017, 11, 13, 10, 29), 1);
 		Task_act *act3 = new Task_act_alert("Name of alert task3", "Test of alert(task number 3).");
-		m->create_task(header3, trig3, act3);
+		m->create_task(header3, trig3, act3);*/
 
+		//m->import_task("exp.test");
+		//m->delete_task(0);
 		//m.refresh();
 		_getch();
 		m->output();
 		_getch();
 	}
-	catch(Task_Exception &e)
+	catch(Task_Exception *&e)
 	{
-		std::cout << e.Get_as_string_with_solution();
+		std::cout << e->Get_as_string_with_solution();
+		Task_Exception::delete_(e);
 		_getch();
 		m->output();
 		_getch();

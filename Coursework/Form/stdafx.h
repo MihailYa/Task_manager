@@ -4,5 +4,6 @@
 //
 
 #pragma once
+#include <Task_Manager.h>
 
 // TODO: Hier auf zusätzliche Header, die das Programm erfordert, verweisen.

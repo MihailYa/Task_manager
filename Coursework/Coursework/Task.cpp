@@ -77,7 +77,7 @@ void Task::output()
 		s2 = ((Task_act_prog*)act)->Get_prog_params();
 		break;
 	default:
-		throw Task_Exception(WrongActType);
+		throw new WrongActType_ex;
 		break;
 	}
 	printf("\nName:\n%s\nText:\n%s\n", s1.c_str(), s2.c_str());

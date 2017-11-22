@@ -36,9 +36,6 @@
     <ClCompile Include="Task.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Time.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Task_trigger.cpp">
       <Filter>Source Files\Triggers</Filter>
     </ClCompile>
@@ -69,6 +66,9 @@
     <ClCompile Include="Task_Exception.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="_Time.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -78,9 +78,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Task.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Time.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="globals.h">
@@ -114,6 +111,9 @@
       <Filter>Header Files\Acts</Filter>
     </ClInclude>
     <ClInclude Include="Task_Exception.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="_Time.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

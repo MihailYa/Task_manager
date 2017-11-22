@@ -2,7 +2,7 @@
 #include "stdafx.h"
 #include "globals.h"
 
-#include "Time.h"
+#include "_Time.h"
 
 enum Trigger_type_t
 {

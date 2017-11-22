@@ -11,6 +11,69 @@ Task_Exception::~Task_Exception()
 {
 }
 
+void Task_Exception::delete_(Task_Exception *&ex_)
+{
+	switch (ex_->Get_error_code())
+	{
+	case ConfigFileNotFound:
+		delete ((ConfigFileNotFound_ex*)ex_);
+		break;
+	case ConfigFileAlreadyOpened:
+		delete ((ConfigFileAlreadyOpened_ex*)ex_);
+		break;
+	case ConfigFileAlreadyDeleted:
+		delete ((ConfigFileAlreadyDeleted_ex*)ex_);
+		break;
+	case ConfigFileCorrupted:
+		delete ((ConfigFileCorrupted_ex*)ex_);
+		break;
+	case CanNotOpenConfigFile:
+		delete ((CanNotOpenConfigFile_ex*)ex_);
+		break;
+	case CanNotOpenFile:
+		delete ((CanNotOpenFile_ex*)ex_);
+		break;
+	case FileCorrupted:
+		delete ((FileCorrupted_ex*)ex_);
+		break;
+	case TaskAlreadyDeleted:
+		delete ((TaskAlreadyDeleted_ex*)ex_);
+		break;
+	case WaiterThreadCycleAlreadyDeleted:
+		delete ((WaiterThreadCycleAlreadyDeleted_ex*)ex_);
+		break;
+	case TaskIdDoesNotExist:
+		delete ((TaskIdDoesNotExist_ex*)ex_);
+		break;
+	case TaskIdDoesNotFound:
+		delete ((TaskIdDoesNotFound_ex*)ex_);
+		break;
+	case EndOfFileWasReached:
+		delete ((EndOfFileWasReached_ex*)ex_);
+		break;
+	case TryAgain:
+		delete ((TryAgain_ex*)ex_);
+		break;
+	case WrongTriggerType:
+		delete ((WrongTriggerType_ex*)ex_);
+		break;
+	case WrongActType:
+		delete ((WrongActType_ex*)ex_);
+		break;
+	case WrongTimeFormat:
+		delete ((WrongTimeFormat_ex*)ex_);
+		break;
+	case WrongTime:
+		delete ((WrongTime_ex*)ex_);
+		break;
+	case WrongExceptionErrorCode:
+		delete ((WrongExceptionErrorCode_ex*)ex_);
+		break;
+	default:
+		break;
+	}
+}
+
 Task_Exception::operator std::string() const 
 {
 	switch (error_code)
@@ -29,6 +92,12 @@ Task_Exception::operator std::string() const
 		break;
 	case CanNotOpenConfigFile:
 		return std::string("Can't open configuration file");
+		break;
+	case CanNotOpenFile:
+		return std::string("Can't open file");
+		break;
+	case FileCorrupted:
+		return std::string("File was corrupted");
 		break;
 	case TaskAlreadyDeleted:
 		return std::string("Task was already deleted");
@@ -64,7 +133,7 @@ Task_Exception::operator std::string() const
 		return std::string("Wrong exception error code");
 		break;
 	default:
-		throw Task_Exception(WrongExceptionErrorCode);
+		throw new WrongExceptionErrorCode_ex;
 		break;
 	}
 }
@@ -83,10 +152,16 @@ std::string Task_Exception::Get_as_string_with_solution() const
 		return std::string("Error: Config file was already deleted\nSolution: Restart task manager");
 		break;
 	case ConfigFileCorrupted:
-		return std::string("Erro: Configuration file was corrupted\nSolution: Restart task manager");
+		return std::string("Error: Configuration file was corrupted\nSolution: Restart task manager");
 		break;
 	case CanNotOpenConfigFile:
-		return std::string("Erro: Can't open configuration file\nSolution: Restart task manager");
+		return std::string("Error: Can't open configuration file\nSolution: Restart task manager");
+		break;
+	case CanNotOpenFile:
+		return std::string("Error: Can't open file\nSolution: Close file and retry");
+		break;
+	case FileCorrupted:
+		return std::string("Error: File was corrupted\nSolution: Choose another file");
 		break;
 	case TaskAlreadyDeleted:
 		return std::string("Error: Task was already deleted\nSolution: Restart task manager");
@@ -122,7 +197,7 @@ std::string Task_Exception::Get_as_string_with_solution() const
 		return std::string("Error: Wrong exception error code\nSolution: Restart task manager");
 		break;
 	default:
-		throw Task_Exception(WrongExceptionErrorCode);
+		throw new WrongExceptionErrorCode_ex;
 		break;
 	}
 }

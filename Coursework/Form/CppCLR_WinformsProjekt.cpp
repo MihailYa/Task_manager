@@ -9,7 +9,7 @@
 //    return 0;
 //}
 #include "stdafx.h"
-#include "Form1.h"
+#include "MainForm.h"
 
 using namespace System;
 using namespace System::Windows::Forms;
@@ -19,6 +19,7 @@ using namespace System::Windows::Forms;
 int main() {
 	Application::EnableVisualStyles();
 	Application::SetCompatibleTextRenderingDefault(false);
-	Application::Run(gcnew CppCLR_WinformsProjekt::Form1()); // "CppCLR_WinformsProjekt" noch anpassen
+	//Application::Run(gcnew TaskManagerForm::MainForm()); // "CppCLR_WinformsProjekt" noch anpassen
+	Application::Run(gcnew TaskManagerForm::CreateTaskForm());
 	return 0;
 }
