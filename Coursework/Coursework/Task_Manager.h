@@ -11,7 +11,7 @@ struct Task_Info_t
 class Task_Manager
 {
 public:
-	Task_Manager(const char* file_name_);
+	Task_Manager(const char* file_name_, bool entrance);
 	~Task_Manager() throw();
 
 
@@ -77,10 +77,10 @@ private:
 		read_trigger
 		read_act
 	*/
-	Task*& read_task(unsigned int id);
+	Task* read_task(unsigned int id);
 	Task_header_t read_header(unsigned int id);
-	Task_trigger*& read_trigger();
-	Task_act*& read_act();
+	Task_trigger* read_trigger();
+	Task_act* read_act();
 
 	void write_header(Task_header_t header);
 	void write_trigger(Task_trigger *&trigger);

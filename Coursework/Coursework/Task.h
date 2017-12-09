@@ -20,6 +20,9 @@ class Task
 {
 public:
 	Task(Task_header_t header_, Task_trigger *&trigger_, Task_act *&act_);
+
+	Task(const Task &right);
+
 	~Task();
 
 	/**
@@ -37,6 +40,7 @@ public:
 	//
 	unsigned int Get_id() const { return header.id; }
 	int Get_time_left() const { return trigger->Get_time_left(); }
+	Trigger_type_t Get_trigger_type() const { return trigger->Get_type(); }
 	Task_header_t Get_header() const { return header; }
 
 #ifdef DEBUG
@@ -48,6 +52,7 @@ public:
 	// Setters
 	//
 	void Set_last_time(Time last_time_) { last_time = last_time_; }
+	void Set_was_maked(bool was_maked) { m_was_maked = was_maked; }
 
 	const Task& operator--();
 
@@ -61,5 +66,6 @@ private:
 	Task_act *act;
 
 	Time last_time; // Last time when task has been done
+	bool m_was_maked;
 };
 

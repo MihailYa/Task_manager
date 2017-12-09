@@ -1,6 +1,6 @@
 #include "Task_Manager.h"
 
-Task_Manager::Task_Manager(const char* file_name_)
+Task_Manager::Task_Manager(const char* file_name_, bool entrance)
 {
 #ifdef DEBUG
 	printf("\nReading tasks...");
@@ -33,6 +33,10 @@ Task_Manager::Task_Manager(const char* file_name_)
 	{
 		tmp = read_task(i);
 		m_Tasks.push_back(tmp);
+		if (!entrance && m_Tasks[i]->Get_trigger_type() == ENTRANCE)
+		{
+			m_Tasks[i]->Set_was_maked(true);
+		}
 	}
 	m_last_id = n - 1;
 
@@ -44,11 +48,9 @@ Task_Manager::Task_Manager(const char* file_name_)
 
 	m_exit = false;
 	m_waiter_cycle_thread = new boost::thread(boost::bind(&Task_Manager::waiter_cycle, this));
-	//m_waiter_cycle_thread = gcnew System::Threading::Thread(gcnew System::Threading::ThreadStart(this, Task_Manager::waiter_cycle));
-	//m_waiter_cycle_thread->Start();
 }
 
-Task_Manager::~Task_Manager() throw()
+Task_Manager::~Task_Manager()
 {
 	if (m_file == nullptr)
 	{
@@ -366,6 +368,7 @@ void Task_Manager::export_task(const char *export_file_name_, unsigned int id_)
 			}
 
 			try_again = true;
+			delete e;
 		}
 		catch (CanNotOpenConfigFile_ex *&e)
 		{
@@ -377,6 +380,7 @@ void Task_Manager::export_task(const char *export_file_name_, unsigned int id_)
 
 			second_try = true;
 			try_again = true;
+			delete e;
 		}
 		catch (TaskIdDoesNotFound_ex *&e)
 		{
@@ -729,7 +733,6 @@ void Task_Manager::open_(unsigned int mode_)
 
 bool Task_Manager::is_corrupted()
 {
-	Task_Exception_error_code_t e_code;
 	bool try_again;
 	do
 	{
@@ -772,22 +775,18 @@ bool Task_Manager::is_corrupted()
 }
 
 
-Task*& Task_Manager::read_task(unsigned int id)
+Task* Task_Manager::read_task(unsigned int id)
 {
-	Task *task;
-
 	Task_header_t header;
 	header = read_header(id);
 
-	Task_trigger *trigger;
+	Task_trigger *trigger = nullptr;
 	trigger = read_trigger();
 
-	Task_act *act;
+	Task_act *act = nullptr;
 	act = read_act();
 
-	task = new Task(header, trigger, act);
-
-	return task;
+	return new Task(header, trigger, act);
 }
 
 Task_header_t Task_Manager::read_header(unsigned int id)
@@ -815,10 +814,9 @@ Task_header_t Task_Manager::read_header(unsigned int id)
 	return header;
 }
 
-Task_trigger*& Task_Manager::read_trigger()
+Task_trigger* Task_Manager::read_trigger()
 {
 	// Fill trigger
-	Task_trigger* trigger;
 	Trigger_type_t trigger_type;
 	Time time;
 	unsigned int priority;
@@ -866,30 +864,29 @@ Task_trigger*& Task_Manager::read_trigger()
 	switch (trigger_type)
 	{
 	case DAYLY:
-		trigger = new Task_trigger_dayly(time, priority);
+		return new Task_trigger_dayly(time, priority);
 		break;
 	case WEEKLY:
-		trigger = new Task_trigger_weekly(time, priority, wday, every_n_week);
+		return new Task_trigger_weekly(time, priority, wday, every_n_week);
 		break;
 	case MONTHLY:
-		trigger = new Task_trigger_monthly(time, priority, m_vec, d_vec);
+		return new Task_trigger_monthly(time, priority, m_vec, d_vec);
 		break;
 	case ONCE:
-		trigger = new Task_trigger_once(time, priority);
+		return new Task_trigger_once(time, priority);
 		break;
 	case ENTRANCE:
-		trigger = new Task_trigger_entrance(time, priority);
+		return new Task_trigger_entrance(time, priority);
 		break;
 	default:
 		throw new WrongTriggerType_ex;
 	}
 
-	return trigger;
+	return nullptr;
 }
 
-Task_act*& Task_Manager::read_act()
+Task_act* Task_Manager::read_act()
 {
-	Task_act *act;
 	Task_act_type_t type;
 	read_((char*)&type, sizeof(Task_act_type_t));
 	
@@ -923,17 +920,17 @@ Task_act*& Task_Manager::read_act()
 	switch (type)
 	{
 	case PROG:
-		act = new Task_act_prog(str1, str2);
+		return new Task_act_prog(str1, str2);
 		break;
 	case ALERT:
-		act = new Task_act_alert(str1, str2);
+		return new Task_act_alert(str1, str2);
 		break;
 	default:
 		throw new WrongActType_ex;
 		break;
 	}
 
-	return act;
+	return nullptr;
 }
 
 
@@ -1152,11 +1149,14 @@ void Task_Manager::waiter()
 	}
 
 	to_wait *= 60;
-	seconds = Time::to_minute_left();
-	if (seconds != 0)
+	if (to_wait)
 	{
-		to_wait -= 60;
-		to_wait += seconds;
+		seconds = Time::to_minute_left();
+		if (seconds != 0)
+		{
+			to_wait -= 60;
+			to_wait += seconds;
+		}
 	}
 #ifdef DEBUG
 	printf("To wait: %d seconds.\n", to_wait);

@@ -1,40 +1,36 @@
 ﻿C:\Program Files\Visual Studio Community 2017\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(387,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (Coursework.vcxproj).  This can lead to incorrect clean and rebuild behavior.
   _Time.cpp
-c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\_time.cpp(33): warning C4996: 'localtime': This function or variable may be unsafe. Consider using localtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\_time.cpp(38): warning C4996: 'localtime': This function or variable may be unsafe. Consider using localtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
   c:\program files (x86)\windows kits\10\include\10.0.16299.0\ucrt\time.h(505): note: see declaration of 'localtime'
-c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\_time.cpp(42): warning C4996: 'localtime': This function or variable may be unsafe. Consider using localtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\_time.cpp(47): warning C4996: 'localtime': This function or variable may be unsafe. Consider using localtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
   c:\program files (x86)\windows kits\10\include\10.0.16299.0\ucrt\time.h(505): note: see declaration of 'localtime'
-c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\_time.cpp(57): warning C4996: 'localtime': This function or variable may be unsafe. Consider using localtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\_time.cpp(62): warning C4996: 'localtime': This function or variable may be unsafe. Consider using localtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
   c:\program files (x86)\windows kits\10\include\10.0.16299.0\ucrt\time.h(505): note: see declaration of 'localtime'
-c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\_time.cpp(267): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 1 has type 'boost::gregorian::greg_year'
-c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\_time.cpp(267): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 2 has type 'boost::gregorian::greg_month'
-c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\_time.cpp(267): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 3 has type 'boost::gregorian::greg_day'
+c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\_time.cpp(277): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 1 has type 'boost::gregorian::greg_year'
+c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\_time.cpp(277): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 2 has type 'boost::gregorian::greg_month'
+c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\_time.cpp(277): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 3 has type 'boost::gregorian::greg_day'
+  Task_Manager.cpp
+c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\task_manager.cpp(57): warning C4297: 'Task_Manager::~Task_Manager': function assumed not to throw an exception but does
+  c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\task_manager.cpp(57): note: destructor or deallocator has a (possibly implicit) non-throwing exception specification
+c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\task_manager.cpp(67): warning C4297: 'Task_Manager::~Task_Manager': function assumed not to throw an exception but does
+  c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\task_manager.cpp(67): note: destructor or deallocator has a (possibly implicit) non-throwing exception specification
+c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\task_manager.cpp(74): warning C4297: 'Task_Manager::~Task_Manager': function assumed not to throw an exception but does
+  c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\task_manager.cpp(74): note: destructor or deallocator has a (possibly implicit) non-throwing exception specification
+c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\task_manager.cpp(232): warning C4244: 'initializing': conversion from 'std::streamoff' to 'unsigned int', possible loss of data
+c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\task_manager.cpp(310): warning C4018: '>': signed/unsigned mismatch
+c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\task_manager.cpp(332): warning C4244: 'initializing': conversion from 'std::streamoff' to 'unsigned int', possible loss of data
+c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\task_manager.cpp(591): warning C4244: 'initializing': conversion from 'std::streamoff' to 'unsigned int', possible loss of data
+c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\task_manager.cpp(600): warning C4244: 'initializing': conversion from 'std::streamoff' to 'unsigned int', possible loss of data
+  Task.cpp
   Task_trigger_weekly.cpp
+c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\task_trigger_weekly.cpp(16): warning C4552: '%': operator has no effect; expected operator with side-effect
   Task_trigger_once.cpp
   Task_trigger_monthly.cpp
   Task_trigger_entrance.cpp
   Task_trigger_dayly.cpp
   Task_trigger.cpp
-  Task_Manager.cpp
-c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\task_manager.cpp(55): warning C4297: 'Task_Manager::~Task_Manager': function assumed not to throw an exception but does
-  c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\task_manager.cpp(55): note: destructor or deallocator has a (possibly implicit) non-throwing exception specification
-c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\task_manager.cpp(65): warning C4297: 'Task_Manager::~Task_Manager': function assumed not to throw an exception but does
-  c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\task_manager.cpp(65): note: destructor or deallocator has a (possibly implicit) non-throwing exception specification
-c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\task_manager.cpp(72): warning C4297: 'Task_Manager::~Task_Manager': function assumed not to throw an exception but does
-  c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\task_manager.cpp(72): note: destructor or deallocator has a (possibly implicit) non-throwing exception specification
-c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\task_manager.cpp(230): warning C4244: 'initializing': conversion from 'std::streamoff' to 'unsigned int', possible loss of data
-c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\task_manager.cpp(308): warning C4018: '>': signed/unsigned mismatch
-c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\task_manager.cpp(330): warning C4244: 'initializing': conversion from 'std::streamoff' to 'unsigned int', possible loss of data
-c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\task_manager.cpp(360): warning C4101: 'e': unreferenced local variable
-c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\task_manager.cpp(587): warning C4244: 'initializing': conversion from 'std::streamoff' to 'unsigned int', possible loss of data
-c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\task_manager.cpp(596): warning C4244: 'initializing': conversion from 'std::streamoff' to 'unsigned int', possible loss of data
-c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\task_manager.cpp(732): warning C4101: 'e_code': unreferenced local variable
-c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\task_manager.cpp(790): warning C4172: returning address of local variable or temporary: task
-c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\task_manager.cpp(936): warning C4172: returning address of local variable or temporary: act
-c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\task_manager.cpp(887): warning C4172: returning address of local variable or temporary: trigger
-  Task_Exception.cpp
   Task_act_prog.cpp
   Task_act_alert.cpp
   Task_act.cpp
-  Task.cpp
+  Task_Exception.cpp
   Coursework.vcxproj -> C:\Users\mikle\Documents\Visual Studio 2017\Projects\GitHub\Task_manager\Coursework\Debug\TaskManager.lib

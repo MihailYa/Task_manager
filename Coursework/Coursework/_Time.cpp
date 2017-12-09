@@ -26,6 +26,11 @@ Time::Time(boost::gregorian::date dat_, unsigned int hours_, unsigned int minute
 {
 }
 
+Time::Time(const Time& right)
+{
+	time = right.time;
+}
+
 Time Time::current_time()
 {
 	time_t c_time = std::time(NULL);
@@ -172,8 +177,13 @@ const int Time::operator-(const Time& right) const
 		if (time_left >= 0)
 			return time_left;
 	}
-
+	
 	return INF;
+}
+
+const int Time::operator%(const Time& right) const
+{
+	return (time.dat - right.time.dat).days() / 7;
 }
 
 const bool Time::operator>(const Time& right) const
@@ -234,7 +244,7 @@ const bool Time::operator>(const Time& right) const
 
 const bool Time::operator>=(const Time& right) const
 {
-	if (*this > right && *this == right)
+	if (*this > right || *this == right)
 		return true;
 
 	return false;

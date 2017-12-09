@@ -27,7 +27,7 @@ class Task_Exception
 {
 public:
 	Task_Exception(Task_Exception_error_code_t error_code_);
-	~Task_Exception();
+	virtual ~Task_Exception();
 
 	static void delete_(Task_Exception *&ex_);
 

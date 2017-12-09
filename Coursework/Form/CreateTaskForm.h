@@ -1,5 +1,6 @@
 #pragma once
 #include "stdafx.h"
+#include "Form_Exception.h"
 
 namespace TaskManagerForm {
 
@@ -22,14 +23,10 @@ namespace TaskManagerForm {
 			//
 			//TODO: Add the constructor code here
 			//
+			this->TrigType->SelectedIndex = 0;
+			this->ActType->SelectedIndex = 0;
 			m_step = 0;
-			
-			Task_header_t header = InputHeader();
-			Task_trigger *trigger = InputTrigger();
-			Task_act *act = InputAct();
-
-			
-			//TaskManagerForm::MainForm::Get()->Get_TaskManager()->create_task(header, trigger, act);
+			m_wday = boost::date_time::Monday;
 		}
 
 	protected:
@@ -62,8 +59,9 @@ namespace TaskManagerForm {
 	private: System::Windows::Forms::CheckedListBox^  MonthlyMonths;
 	private: System::Windows::Forms::Label^  MonthlyMonthsLabel;
 	private: System::Windows::Forms::GroupBox^  WeeklyBox;
-	private: System::Windows::Forms::CheckedListBox^  WeeklyWDays;
-	private: System::Windows::Forms::Label^  WeeklyWDaysLabel;
+
+
+
 	private: System::Windows::Forms::Label^  WeeklyEveryNWeekLabel;
 	private: System::Windows::Forms::NumericUpDown^  WeeklyEveryNWeek;
 	private: System::Windows::Forms::GroupBox^  StepThreeBox;
@@ -98,7 +96,21 @@ namespace TaskManagerForm {
 		/// Required designer variable.
 		/// </summary>
 		System::ComponentModel::Container ^components;
-		unsigned int m_step;
+	private: System::Windows::Forms::Button^  SendBtn;
+	private: System::Windows::Forms::GroupBox^  WeeklyWDayBox;
+	private: System::Windows::Forms::RadioButton^  WDaySun;
+	private: System::Windows::Forms::RadioButton^  WDaySat;
+	private: System::Windows::Forms::RadioButton^  WDayFri;
+	private: System::Windows::Forms::RadioButton^  WDayThu;
+	private: System::Windows::Forms::RadioButton^  WDayWed;
+	private: System::Windows::Forms::RadioButton^  WDayTue;
+	private: System::Windows::Forms::RadioButton^  WDayMon;
+
+
+			 unsigned int m_step;
+	private: System::Windows::Forms::Label^  TrigPriorLabel;
+	private: System::Windows::Forms::NumericUpDown^  TrigPrior;
+			 boost::date_time::weekdays m_wday;
 
 #pragma region Windows Form Designer generated code
 		/// <summary>
@@ -116,9 +128,17 @@ namespace TaskManagerForm {
 			this->MainHeaderLabel = (gcnew System::Windows::Forms::Label());
 			this->StepOneBox = (gcnew System::Windows::Forms::GroupBox());
 			this->StepTwoBox = (gcnew System::Windows::Forms::GroupBox());
+			this->TrigPriorLabel = (gcnew System::Windows::Forms::Label());
+			this->TrigPrior = (gcnew System::Windows::Forms::NumericUpDown());
 			this->WeeklyBox = (gcnew System::Windows::Forms::GroupBox());
-			this->WeeklyWDays = (gcnew System::Windows::Forms::CheckedListBox());
-			this->WeeklyWDaysLabel = (gcnew System::Windows::Forms::Label());
+			this->WeeklyWDayBox = (gcnew System::Windows::Forms::GroupBox());
+			this->WDaySun = (gcnew System::Windows::Forms::RadioButton());
+			this->WDaySat = (gcnew System::Windows::Forms::RadioButton());
+			this->WDayFri = (gcnew System::Windows::Forms::RadioButton());
+			this->WDayThu = (gcnew System::Windows::Forms::RadioButton());
+			this->WDayWed = (gcnew System::Windows::Forms::RadioButton());
+			this->WDayTue = (gcnew System::Windows::Forms::RadioButton());
+			this->WDayMon = (gcnew System::Windows::Forms::RadioButton());
 			this->WeeklyEveryNWeekLabel = (gcnew System::Windows::Forms::Label());
 			this->WeeklyEveryNWeek = (gcnew System::Windows::Forms::NumericUpDown());
 			this->MonthlyBox = (gcnew System::Windows::Forms::GroupBox());
@@ -143,9 +163,12 @@ namespace TaskManagerForm {
 			this->MessageName = (gcnew System::Windows::Forms::TextBox());
 			this->ActType = (gcnew System::Windows::Forms::ComboBox());
 			this->ActTypeLabel = (gcnew System::Windows::Forms::Label());
+			this->SendBtn = (gcnew System::Windows::Forms::Button());
 			this->StepOneBox->SuspendLayout();
 			this->StepTwoBox->SuspendLayout();
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->TrigPrior))->BeginInit();
 			this->WeeklyBox->SuspendLayout();
+			this->WeeklyWDayBox->SuspendLayout();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->WeeklyEveryNWeek))->BeginInit();
 			this->MonthlyBox->SuspendLayout();
 			this->StepThreeBox->SuspendLayout();
@@ -156,7 +179,7 @@ namespace TaskManagerForm {
 			// PreviousStepBtn
 			// 
 			this->PreviousStepBtn->Enabled = false;
-			this->PreviousStepBtn->Location = System::Drawing::Point(20, 413);
+			this->PreviousStepBtn->Location = System::Drawing::Point(19, 527);
 			this->PreviousStepBtn->Name = L"PreviousStepBtn";
 			this->PreviousStepBtn->Size = System::Drawing::Size(75, 23);
 			this->PreviousStepBtn->TabIndex = 8;
@@ -166,7 +189,7 @@ namespace TaskManagerForm {
 			// 
 			// NextStepBtn
 			// 
-			this->NextStepBtn->Location = System::Drawing::Point(122, 413);
+			this->NextStepBtn->Location = System::Drawing::Point(121, 527);
 			this->NextStepBtn->Name = L"NextStepBtn";
 			this->NextStepBtn->Size = System::Drawing::Size(75, 23);
 			this->NextStepBtn->TabIndex = 5;
@@ -232,6 +255,8 @@ namespace TaskManagerForm {
 			// 
 			// StepTwoBox
 			// 
+			this->StepTwoBox->Controls->Add(this->TrigPriorLabel);
+			this->StepTwoBox->Controls->Add(this->TrigPrior);
 			this->StepTwoBox->Controls->Add(this->WeeklyBox);
 			this->StepTwoBox->Controls->Add(this->MonthlyBox);
 			this->StepTwoBox->Controls->Add(this->TrigTimeLabel);
@@ -240,46 +265,135 @@ namespace TaskManagerForm {
 			this->StepTwoBox->Controls->Add(this->TrigType);
 			this->StepTwoBox->Location = System::Drawing::Point(19, 46);
 			this->StepTwoBox->Name = L"StepTwoBox";
-			this->StepTwoBox->Size = System::Drawing::Size(367, 359);
+			this->StepTwoBox->Size = System::Drawing::Size(367, 475);
 			this->StepTwoBox->TabIndex = 7;
 			this->StepTwoBox->TabStop = false;
 			this->StepTwoBox->Text = L"Step 2/3";
 			this->StepTwoBox->Visible = false;
 			// 
+			// TrigPriorLabel
+			// 
+			this->TrigPriorLabel->AutoSize = true;
+			this->TrigPriorLabel->Location = System::Drawing::Point(13, 134);
+			this->TrigPriorLabel->Name = L"TrigPriorLabel";
+			this->TrigPriorLabel->Size = System::Drawing::Size(117, 17);
+			this->TrigPriorLabel->TabIndex = 13;
+			this->TrigPriorLabel->Text = L"Priority of trigger:";
+			// 
+			// TrigPrior
+			// 
+			this->TrigPrior->Location = System::Drawing::Point(13, 154);
+			this->TrigPrior->Name = L"TrigPrior";
+			this->TrigPrior->Size = System::Drawing::Size(108, 22);
+			this->TrigPrior->TabIndex = 12;
+			// 
 			// WeeklyBox
 			// 
-			this->WeeklyBox->Controls->Add(this->WeeklyWDays);
-			this->WeeklyBox->Controls->Add(this->WeeklyWDaysLabel);
+			this->WeeklyBox->Controls->Add(this->WeeklyWDayBox);
 			this->WeeklyBox->Controls->Add(this->WeeklyEveryNWeekLabel);
 			this->WeeklyBox->Controls->Add(this->WeeklyEveryNWeek);
-			this->WeeklyBox->Location = System::Drawing::Point(13, 141);
+			this->WeeklyBox->Location = System::Drawing::Point(13, 190);
 			this->WeeklyBox->Name = L"WeeklyBox";
-			this->WeeklyBox->Size = System::Drawing::Size(233, 202);
+			this->WeeklyBox->Size = System::Drawing::Size(233, 273);
 			this->WeeklyBox->TabIndex = 8;
 			this->WeeklyBox->TabStop = false;
 			this->WeeklyBox->Text = L"Select info for weekly trigger";
 			this->WeeklyBox->Visible = false;
 			// 
-			// WeeklyWDays
+			// WeeklyWDayBox
 			// 
-			this->WeeklyWDays->FormattingEnabled = true;
-			this->WeeklyWDays->Items->AddRange(gcnew cli::array< System::Object^  >(7) {
-				L"Mon", L"Tue", L"Wed", L"Thu", L"Fri", L"Sat",
-					L"Sun"
-			});
-			this->WeeklyWDays->Location = System::Drawing::Point(10, 99);
-			this->WeeklyWDays->Name = L"WeeklyWDays";
-			this->WeeklyWDays->Size = System::Drawing::Size(120, 89);
-			this->WeeklyWDays->TabIndex = 3;
+			this->WeeklyWDayBox->Controls->Add(this->WDaySun);
+			this->WeeklyWDayBox->Controls->Add(this->WDaySat);
+			this->WeeklyWDayBox->Controls->Add(this->WDayFri);
+			this->WeeklyWDayBox->Controls->Add(this->WDayThu);
+			this->WeeklyWDayBox->Controls->Add(this->WDayWed);
+			this->WeeklyWDayBox->Controls->Add(this->WDayTue);
+			this->WeeklyWDayBox->Controls->Add(this->WDayMon);
+			this->WeeklyWDayBox->Location = System::Drawing::Point(10, 72);
+			this->WeeklyWDayBox->Name = L"WeeklyWDayBox";
+			this->WeeklyWDayBox->Size = System::Drawing::Size(157, 191);
+			this->WeeklyWDayBox->TabIndex = 3;
+			this->WeeklyWDayBox->TabStop = false;
+			this->WeeklyWDayBox->Text = L"Choose day of week";
 			// 
-			// WeeklyWDaysLabel
+			// WDaySun
 			// 
-			this->WeeklyWDaysLabel->AutoSize = true;
-			this->WeeklyWDaysLabel->Location = System::Drawing::Point(7, 72);
-			this->WeeklyWDaysLabel->Name = L"WeeklyWDaysLabel";
-			this->WeeklyWDaysLabel->Size = System::Drawing::Size(137, 17);
-			this->WeeklyWDaysLabel->TabIndex = 2;
-			this->WeeklyWDaysLabel->Text = L"Select days of week:";
+			this->WDaySun->AutoSize = true;
+			this->WDaySun->Location = System::Drawing::Point(8, 161);
+			this->WDaySun->Name = L"WDaySun";
+			this->WDaySun->Size = System::Drawing::Size(54, 21);
+			this->WDaySun->TabIndex = 6;
+			this->WDaySun->Text = L"Sun";
+			this->WDaySun->UseVisualStyleBackColor = true;
+			this->WDaySun->Click += gcnew System::EventHandler(this, &CreateTaskForm::WDaySun_Click);
+			// 
+			// WDaySat
+			// 
+			this->WDaySat->AutoSize = true;
+			this->WDaySat->Location = System::Drawing::Point(8, 138);
+			this->WDaySat->Name = L"WDaySat";
+			this->WDaySat->Size = System::Drawing::Size(50, 21);
+			this->WDaySat->TabIndex = 5;
+			this->WDaySat->Text = L"Sat";
+			this->WDaySat->UseVisualStyleBackColor = true;
+			this->WDaySat->Click += gcnew System::EventHandler(this, &CreateTaskForm::WDaySat_Click);
+			// 
+			// WDayFri
+			// 
+			this->WDayFri->AutoSize = true;
+			this->WDayFri->Location = System::Drawing::Point(8, 115);
+			this->WDayFri->Name = L"WDayFri";
+			this->WDayFri->Size = System::Drawing::Size(45, 21);
+			this->WDayFri->TabIndex = 4;
+			this->WDayFri->Text = L"Fri";
+			this->WDayFri->UseVisualStyleBackColor = true;
+			this->WDayFri->Click += gcnew System::EventHandler(this, &CreateTaskForm::WDayFri_Click);
+			// 
+			// WDayThu
+			// 
+			this->WDayThu->AutoSize = true;
+			this->WDayThu->Location = System::Drawing::Point(8, 92);
+			this->WDayThu->Name = L"WDayThu";
+			this->WDayThu->Size = System::Drawing::Size(54, 21);
+			this->WDayThu->TabIndex = 3;
+			this->WDayThu->Text = L"Thu";
+			this->WDayThu->UseVisualStyleBackColor = true;
+			this->WDayThu->Click += gcnew System::EventHandler(this, &CreateTaskForm::WDayThu_Click);
+			// 
+			// WDayWed
+			// 
+			this->WDayWed->AutoSize = true;
+			this->WDayWed->Location = System::Drawing::Point(8, 69);
+			this->WDayWed->Name = L"WDayWed";
+			this->WDayWed->Size = System::Drawing::Size(58, 21);
+			this->WDayWed->TabIndex = 2;
+			this->WDayWed->Text = L"Wed";
+			this->WDayWed->UseVisualStyleBackColor = true;
+			this->WDayWed->Click += gcnew System::EventHandler(this, &CreateTaskForm::WDayWed_Click);
+			// 
+			// WDayTue
+			// 
+			this->WDayTue->AutoSize = true;
+			this->WDayTue->Location = System::Drawing::Point(8, 45);
+			this->WDayTue->Name = L"WDayTue";
+			this->WDayTue->Size = System::Drawing::Size(54, 21);
+			this->WDayTue->TabIndex = 1;
+			this->WDayTue->Text = L"Tue";
+			this->WDayTue->UseVisualStyleBackColor = true;
+			this->WDayTue->Click += gcnew System::EventHandler(this, &CreateTaskForm::WDayTue_Click);
+			// 
+			// WDayMon
+			// 
+			this->WDayMon->AutoSize = true;
+			this->WDayMon->Checked = true;
+			this->WDayMon->Location = System::Drawing::Point(8, 21);
+			this->WDayMon->Name = L"WDayMon";
+			this->WDayMon->Size = System::Drawing::Size(56, 21);
+			this->WDayMon->TabIndex = 0;
+			this->WDayMon->TabStop = true;
+			this->WDayMon->Text = L"Mon";
+			this->WDayMon->UseVisualStyleBackColor = true;
+			this->WDayMon->Click += gcnew System::EventHandler(this, &CreateTaskForm::WDayMon_Click);
 			// 
 			// WeeklyEveryNWeekLabel
 			// 
@@ -303,7 +417,7 @@ namespace TaskManagerForm {
 			this->MonthlyBox->Controls->Add(this->MonthlyDays);
 			this->MonthlyBox->Controls->Add(this->MonthlyMonthsLabel);
 			this->MonthlyBox->Controls->Add(this->MonthlyDaysLabel);
-			this->MonthlyBox->Location = System::Drawing::Point(13, 141);
+			this->MonthlyBox->Location = System::Drawing::Point(13, 190);
 			this->MonthlyBox->Name = L"MonthlyBox";
 			this->MonthlyBox->Size = System::Drawing::Size(309, 171);
 			this->MonthlyBox->TabIndex = 11;
@@ -385,8 +499,7 @@ namespace TaskManagerForm {
 			// TrigType
 			// 
 			this->TrigType->FormattingEnabled = true;
-			this->TrigType->Items->AddRange(gcnew cli::array< System::Object^  >(5) { L"Once", L"Entrance", L"Dayly", L"Weekly", L"Monthly" });
-			this->TrigType->SelectedIndex = 0;
+			this->TrigType->Items->AddRange(gcnew cli::array< System::Object^  >(5) { L"Dayly", L"Weekly", L"Monthly", L"Once", L"Entrance" });
 			this->TrigType->Location = System::Drawing::Point(13, 45);
 			this->TrigType->Name = L"TrigType";
 			this->TrigType->Size = System::Drawing::Size(121, 24);
@@ -401,7 +514,7 @@ namespace TaskManagerForm {
 			this->StepThreeBox->Controls->Add(this->ActTypeLabel);
 			this->StepThreeBox->Location = System::Drawing::Point(19, 46);
 			this->StepThreeBox->Name = L"StepThreeBox";
-			this->StepThreeBox->Size = System::Drawing::Size(333, 263);
+			this->StepThreeBox->Size = System::Drawing::Size(320, 263);
 			this->StepThreeBox->TabIndex = 9;
 			this->StepThreeBox->TabStop = false;
 			this->StepThreeBox->Text = L"Step 3/3";
@@ -502,8 +615,7 @@ namespace TaskManagerForm {
 			// ActType
 			// 
 			this->ActType->FormattingEnabled = true;
-			this->ActType->Items->AddRange(gcnew cli::array< System::Object^  >(2) { L"Show message", L"Start program" });
-			this->ActType->SelectedIndex = 0;
+			this->ActType->Items->AddRange(gcnew cli::array< System::Object^  >(2) { L"Start program", L"Show message" });
 			this->ActType->Location = System::Drawing::Point(17, 48);
 			this->ActType->Name = L"ActType";
 			this->ActType->Size = System::Drawing::Size(128, 24);
@@ -519,11 +631,22 @@ namespace TaskManagerForm {
 			this->ActTypeLabel->TabIndex = 0;
 			this->ActTypeLabel->Text = L"Type of action:";
 			// 
+			// SendBtn
+			// 
+			this->SendBtn->Location = System::Drawing::Point(310, 527);
+			this->SendBtn->Name = L"SendBtn";
+			this->SendBtn->Size = System::Drawing::Size(75, 23);
+			this->SendBtn->TabIndex = 10;
+			this->SendBtn->Text = L"OK";
+			this->SendBtn->UseVisualStyleBackColor = true;
+			this->SendBtn->Click += gcnew System::EventHandler(this, &CreateTaskForm::SendBtn_Click);
+			// 
 			// CreateTaskForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(8, 16);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-			this->ClientSize = System::Drawing::Size(986, 721);
+			this->ClientSize = System::Drawing::Size(441, 609);
+			this->Controls->Add(this->SendBtn);
 			this->Controls->Add(this->StepThreeBox);
 			this->Controls->Add(this->PreviousStepBtn);
 			this->Controls->Add(this->StepTwoBox);
@@ -536,8 +659,11 @@ namespace TaskManagerForm {
 			this->StepOneBox->PerformLayout();
 			this->StepTwoBox->ResumeLayout(false);
 			this->StepTwoBox->PerformLayout();
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->TrigPrior))->EndInit();
 			this->WeeklyBox->ResumeLayout(false);
 			this->WeeklyBox->PerformLayout();
+			this->WeeklyWDayBox->ResumeLayout(false);
+			this->WeeklyWDayBox->PerformLayout();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->WeeklyEveryNWeek))->EndInit();
 			this->MonthlyBox->ResumeLayout(false);
 			this->MonthlyBox->PerformLayout();
@@ -580,18 +706,40 @@ namespace TaskManagerForm {
 			this->ProgramBox->Visible = false;
 
 			if (this->ActType->SelectedIndex == 0)
-				this->MessageBox->Visible = true;
-			else
 				this->ProgramBox->Visible = true;
+			else
+				this->MessageBox->Visible = true;
 		}
 		private: System::Void TrigType_SelectedIndexChanged(System::Object^  sender, System::EventArgs^  e) {
-	this->MonthlyBox->Visible = false;
-	this->WeeklyBox->Visible = false;
+			this->MonthlyBox->Visible = false;
+			this->WeeklyBox->Visible = false;
 
-	if (this->TrigType->SelectedIndex == 3)
-		this->WeeklyBox->Visible = true;
-	else if (this->TrigType->SelectedIndex == 4)
-		this->MonthlyBox->Visible = true;
+			if (this->TrigType->SelectedIndex == 1)
+				this->WeeklyBox->Visible = true;
+			else if (this->TrigType->SelectedIndex == 2)
+				this->MonthlyBox->Visible = true;
+		}
+		private: System::Void SendBtn_Click(System::Object^  sender, System::EventArgs^  e);
+private: System::Void WDayMon_Click(System::Object^  sender, System::EventArgs^  e) {
+	m_wday = boost::date_time::Monday;
+}
+private: System::Void WDayTue_Click(System::Object^  sender, System::EventArgs^  e) {
+	m_wday = boost::date_time::Tuesday;
+}
+private: System::Void WDayWed_Click(System::Object^  sender, System::EventArgs^  e) {
+	m_wday = boost::date_time::Wednesday;
+}
+private: System::Void WDayThu_Click(System::Object^  sender, System::EventArgs^  e) {
+	m_wday = boost::date_time::Thursday;
+}
+private: System::Void WDayFri_Click(System::Object^  sender, System::EventArgs^  e) {
+	m_wday = boost::date_time::Friday;
+}
+private: System::Void WDaySat_Click(System::Object^  sender, System::EventArgs^  e) {
+	m_wday = boost::date_time::Saturday;
+}
+private: System::Void WDaySun_Click(System::Object^  sender, System::EventArgs^  e) {
+	m_wday = boost::date_time::Sunday;
 }
 };
 }

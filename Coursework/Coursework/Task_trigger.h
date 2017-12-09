@@ -17,7 +17,7 @@ class Task_trigger
 {
 public:
 	Task_trigger();
-	~Task_trigger();
+	virtual ~Task_trigger();
 
 	Task_trigger(Trigger_type_t type_, Time time_, unsigned int priority_);
 

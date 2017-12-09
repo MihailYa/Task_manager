@@ -24,6 +24,8 @@ public:
 	Time(unsigned int year_, unsigned int month_, unsigned int day_, unsigned int hours_, unsigned int minutes_);
 	Time(boost::gregorian::date dat_, unsigned int hours_, unsigned int minutes_);
 
+	Time(const Time& right);
+
 	static Time current_time();
 	/**
 	* Get number of seconds left to nearly new minute
@@ -57,6 +59,9 @@ public:
 	const Time operator+(const int num_of_days) const;
 	const Time operator+=(const int num_of_days);
 	const int operator-(const Time& right) const;
+	// Return how many weeks we must add to right
+	// to increase right value almost to THIS
+	const int operator%(const Time& right) const;
 	const bool operator>(const Time& right) const;
 	const bool operator>=(const Time& right) const;
 	const bool operator<(const Time& right) const;

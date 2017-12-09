@@ -1,10 +1,9 @@
 #pragma once
 #include "stdafx.h"
 #include "CreateTaskForm.h"
-#define CONFIG_FILE_NAME "TasksConfig.tm"
+#define CONFIG_FILE_NAME "C:/Users/mikle/Documents/Visual Studio 2017/Projects/GitHub/Task_manager/Coursework/Debug/TasksConfig.tm"
 
 namespace TaskManagerForm {
-
 	using namespace System;
 	using namespace System::ComponentModel;
 	using namespace System::Collections;
@@ -18,46 +17,24 @@ namespace TaskManagerForm {
 	public ref class MainForm : public System::Windows::Forms::Form
 	{
 	public:
-		MainForm(void)
-		{
-			m_this = this;
+		/**
+		* @param hide if need to hide window
+		* @param entrance if need to start entrance tasks
+		*/
+		MainForm(bool hide, bool entrance);
 
-			InitializeComponent();
-			//
-			//TODO: Konstruktorcode hier hinzufügen.
-			//
-
-			try
-			{
-				m_TaskManager = new Task_Manager(CONFIG_FILE_NAME);
-				refresh();
-			}
-			catch (Task_Exception *&e)
-			{
-				MessageBox::Show(gcnew String(e->Get_as_string_with_solution().c_str()), "Error", MessageBoxButtons::OK);
-			}
-		}
+		void refresh();
 
 		Task_Manager* Get_TaskManager() { return m_TaskManager; }
 		static MainForm^ Get() { return m_this; }
+
 	protected:
 		/// <summary>
 		/// Verwendete Ressourcen bereinigen.
 		/// </summary>
-		~MainForm()
-		{
-			if (components)
-			{
-				delete components;
-			}
+		~MainForm();
 
-			if (m_TaskManager != nullptr)
-				delete m_TaskManager;
-		}
 	private: System::Windows::Forms::Label^  ListHeader;
-	protected:
-
-
 	private: System::Windows::Forms::DataGridView^  TaskList;
 	private: System::Windows::Forms::DataGridViewTextBoxColumn^  TaskId;
 	private: System::Windows::Forms::DataGridViewTextBoxColumn^  TaskName;
@@ -70,11 +47,6 @@ namespace TaskManagerForm {
 
 
 
-
-
-
-	protected:
-
 	private:
 		/// <summary>
 		/// Erforderliche Designervariable.
@@ -83,8 +55,19 @@ namespace TaskManagerForm {
 	private: System::Windows::Forms::MenuStrip^  menuStrip1;
 	private: System::Windows::Forms::ToolStripMenuItem^  toolStripMenuItem1;
 	private: System::Windows::Forms::ToolStripMenuItem^  createTaskToolStripMenuItem;
-			 Task_Manager *m_TaskManager;
-			 static MainForm^ m_this;
+	private: System::Windows::Forms::ToolStripMenuItem^  exitToolStripMenuItem;
+	private: System::Windows::Forms::FolderBrowserDialog^  ExportTask;
+	private: System::Windows::Forms::ToolStripMenuItem^  importTaskToolStripMenuItem;
+	private: System::Windows::Forms::OpenFileDialog^  ImportTask;
+
+	private:
+		Task_Manager *m_TaskManager;
+		CreateTaskForm^ m_CreateForm;
+		Threading::Thread^ m_check_show_thread;
+		bool m_check_show_thread_exit;
+		bool m_exit;
+		bool m_hide;
+		static MainForm^ m_this;
 
 #pragma region Windows Form Designer generated code
 		/// <summary>
@@ -105,6 +88,10 @@ namespace TaskManagerForm {
 			this->menuStrip1 = (gcnew System::Windows::Forms::MenuStrip());
 			this->toolStripMenuItem1 = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->createTaskToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->importTaskToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->exitToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->ExportTask = (gcnew System::Windows::Forms::FolderBrowserDialog());
+			this->ImportTask = (gcnew System::Windows::Forms::OpenFileDialog());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->TaskList))->BeginInit();
 			this->menuStrip1->SuspendLayout();
 			this->SuspendLayout();
@@ -132,8 +119,9 @@ namespace TaskManagerForm {
 			this->TaskList->Location = System::Drawing::Point(18, 69);
 			this->TaskList->Name = L"TaskList";
 			this->TaskList->RowTemplate->Height = 24;
-			this->TaskList->Size = System::Drawing::Size(585, 150);
+			this->TaskList->Size = System::Drawing::Size(653, 150);
 			this->TaskList->TabIndex = 2;
+			this->TaskList->CellClick += gcnew System::Windows::Forms::DataGridViewCellEventHandler(this, &MainForm::TaskList_CellClick);
 			// 
 			// TaskId
 			// 
@@ -204,7 +192,10 @@ namespace TaskManagerForm {
 			// 
 			// toolStripMenuItem1
 			// 
-			this->toolStripMenuItem1->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(1) { this->createTaskToolStripMenuItem });
+			this->toolStripMenuItem1->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(3) {
+				this->createTaskToolStripMenuItem,
+					this->importTaskToolStripMenuItem, this->exitToolStripMenuItem
+			});
 			this->toolStripMenuItem1->Name = L"toolStripMenuItem1";
 			this->toolStripMenuItem1->Size = System::Drawing::Size(44, 24);
 			this->toolStripMenuItem1->Text = L"File";
@@ -212,9 +203,27 @@ namespace TaskManagerForm {
 			// createTaskToolStripMenuItem
 			// 
 			this->createTaskToolStripMenuItem->Name = L"createTaskToolStripMenuItem";
-			this->createTaskToolStripMenuItem->Size = System::Drawing::Size(181, 26);
+			this->createTaskToolStripMenuItem->Size = System::Drawing::Size(159, 26);
 			this->createTaskToolStripMenuItem->Text = L"Create task";
 			this->createTaskToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::createTaskToolStripMenuItem_Click);
+			// 
+			// importTaskToolStripMenuItem
+			// 
+			this->importTaskToolStripMenuItem->Name = L"importTaskToolStripMenuItem";
+			this->importTaskToolStripMenuItem->Size = System::Drawing::Size(159, 26);
+			this->importTaskToolStripMenuItem->Text = L"Import task";
+			this->importTaskToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::importTaskToolStripMenuItem_Click);
+			// 
+			// exitToolStripMenuItem
+			// 
+			this->exitToolStripMenuItem->Name = L"exitToolStripMenuItem";
+			this->exitToolStripMenuItem->Size = System::Drawing::Size(159, 26);
+			this->exitToolStripMenuItem->Text = L"Exit";
+			this->exitToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::exitToolStripMenuItem_Click);
+			// 
+			// ImportTask
+			// 
+			this->ImportTask->Filter = L"Task files (.tm)|*.tm";
 			// 
 			// MainForm
 			// 
@@ -229,6 +238,8 @@ namespace TaskManagerForm {
 			this->Margin = System::Windows::Forms::Padding(4);
 			this->Name = L"MainForm";
 			this->Text = L"Task Manager";
+			this->FormClosing += gcnew System::Windows::Forms::FormClosingEventHandler(this, &MainForm::MainForm_FormClosing);
+			this->VisibleChanged += gcnew System::EventHandler(this, &MainForm::MainForm_VisibleChanged);
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->TaskList))->EndInit();
 			this->menuStrip1->ResumeLayout(false);
 			this->menuStrip1->PerformLayout();
@@ -237,14 +248,15 @@ namespace TaskManagerForm {
 
 		}
 #pragma endregion
-
-		void refresh();
-	private: System::Void RefreshButton_Click(System::Object^  sender, System::EventArgs^  e) {
-		refresh();
-	}
-
-	private: System::Void createTaskToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {
-
-	}
+	private:
+		// Check if we need to show window
+		void check_show_cycle();
+		System::Void RefreshButton_Click(System::Object^  sender, System::EventArgs^  e);
+		System::Void createTaskToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e);
+		System::Void TaskList_CellClick(System::Object^  sender, System::Windows::Forms::DataGridViewCellEventArgs^  e);
+		System::Void importTaskToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e);
+		System::Void MainForm_FormClosing(System::Object^  sender, System::Windows::Forms::FormClosingEventArgs^  e);
+		System::Void exitToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e);
+		System::Void MainForm_VisibleChanged(System::Object^  sender, System::EventArgs^  e);
 };
 }
