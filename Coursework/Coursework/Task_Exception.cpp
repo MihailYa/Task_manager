@@ -66,6 +66,12 @@ void Task_Exception::delete_(Task_Exception *&ex_)
 	case WrongTime:
 		delete ((WrongTime_ex*)ex_);
 		break;
+	case AlertManagerDoesNotExist:
+		delete ((AlertManagerDoesNotExist_ex*)ex_);
+		break;
+	case AlertManagerAlreadyCreated:
+		delete ((AlertManagerAlreadyCreated_ex*)ex_);
+		break;
 	case WrongExceptionErrorCode:
 		delete ((WrongExceptionErrorCode_ex*)ex_);
 		break;
@@ -128,6 +134,12 @@ Task_Exception::operator std::string() const
 		break;
 	case WrongTime:
 		return std::string("Wrong time was specified");
+		break;
+	case AlertManagerDoesNotExist:
+		return std::string("Alert Manager does not exist");
+		break;
+	case AlertManagerAlreadyCreated:
+		return std::string("Alert Manager was already created");
 		break;
 	case WrongExceptionErrorCode:
 		return std::string("Wrong exception error code");
@@ -192,6 +204,12 @@ std::string Task_Exception::Get_as_string_with_solution() const
 		break;
 	case WrongTime:
 		return std::string("Error: Wrong time was specified\nSolution: Input another time");
+		break;
+	case AlertManagerDoesNotExist:
+		return std::string("Error: Alert Manager does not exist\nSolution:\n\tFor user: Restart task manager\n\tFor developer: Create Alert_Manager before calling this function");
+		break;
+	case AlertManagerAlreadyCreated:
+		return std::string("Error: Alert Manager was already created\nSolution:\n\tFor user: Restrart task manager\n\tFor developer: Be sure you don't create a few Alert_Manager objects");
 		break;
 	case WrongExceptionErrorCode:
 		return std::string("Error: Wrong exception error code\nSolution: Restart task manager");

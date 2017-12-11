@@ -1,6 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "Task.h"
+#include "Alert_Manager.h"
 
 struct Task_Info_t
 {
@@ -151,6 +152,8 @@ private:
 	std::fstream *m_file;
 	std::vector<Task*> m_Tasks;
 	int m_last_id;
+
+	Alert_Manager *m_alert_manager;
 
 	// Waiter:
 	bool m_stop_waiting;

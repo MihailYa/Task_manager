@@ -42,6 +42,8 @@ Task_Manager::Task_Manager(const char* file_name_, bool entrance)
 
 	m_file->close();
 
+	m_alert_manager = new Alert_Manager;
+
 #ifdef DEBUG
 	printf("\n%d tasks was read.\n", n);
 #endif // DEBUG
@@ -60,6 +62,14 @@ Task_Manager::~Task_Manager()
 	m_file = nullptr;
 
 	m_exit = true;
+	m_waiter_cycle_thread->join();
+	if (m_waiter_cycle_thread == nullptr)
+	{
+		throw new WaiterThreadCycleAlreadyDeleted_ex;
+	}
+	delete m_waiter_cycle_thread;
+	m_waiter_cycle_thread = nullptr;
+
 	for (unsigned int i = 0; i < m_Tasks.size(); i++)
 	{
 		if (m_Tasks[i] == nullptr)
@@ -68,13 +78,12 @@ Task_Manager::~Task_Manager()
 		}
 		delete m_Tasks[i];
 	}
-	m_waiter_cycle_thread->join();
-	if (m_waiter_cycle_thread == nullptr)
+
+	if (m_alert_manager != nullptr)
 	{
-		throw new WaiterThreadCycleAlreadyDeleted_ex;
+		delete m_alert_manager;
+		m_alert_manager = nullptr;
 	}
-	delete m_waiter_cycle_thread;
-	m_waiter_cycle_thread = nullptr;
 }
 
 void Task_Manager::create_task(Task_header_t header, Task_trigger *&trigger, Task_act *&act)
@@ -525,6 +534,8 @@ void Task_Manager::create_task_private(Task_header_t header, Task_trigger *&trig
 
 	// Add task in list
 	Task *tmp = new Task(header, trigger, act);
+	if (tmp->Get_trigger_type() == ENTRANCE)
+		tmp->Set_was_maked(true);
 	m_Tasks.push_back(tmp);
 
 #ifdef DEBUG
@@ -760,6 +771,7 @@ bool Task_Manager::is_corrupted()
 		}
 		catch(EndOfFileWasReached_ex *&e)
 		{
+			m_file->close();
 			delete e;
 			return true;
 		}

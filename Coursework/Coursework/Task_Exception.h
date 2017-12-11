@@ -20,6 +20,8 @@ enum Task_Exception_error_code_t
 	WrongActType,
 	WrongTimeFormat,
 	WrongTime,
+	AlertManagerDoesNotExist,
+	AlertManagerAlreadyCreated,
 	WrongExceptionErrorCode
 };
 
@@ -140,6 +142,18 @@ class WrongTime_ex : public Task_Exception
 {
 public:
 	WrongTime_ex() : Task_Exception(WrongTime) {}
+};
+
+class AlertManagerDoesNotExist_ex : public Task_Exception
+{
+public:
+	AlertManagerDoesNotExist_ex() : Task_Exception(AlertManagerDoesNotExist) {}
+};
+
+class AlertManagerAlreadyCreated_ex : public Task_Exception
+{
+public:
+	AlertManagerAlreadyCreated_ex() : Task_Exception(AlertManagerAlreadyCreated) {}
 };
 
 class WrongExceptionErrorCode_ex : public Task_Exception

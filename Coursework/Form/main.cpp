@@ -19,7 +19,7 @@ using namespace System::Windows::Forms;
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //
 //
-// TO DO: add entrance check
+// TO DO:
 
 [STAThread]
 int main(array<String^>^ args)
