@@ -3,9 +3,12 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27004.2006
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Coursework", "Coursework\Coursework.vcxproj", "{DA5AC894-BF6F-47A1-9048-E339025C9BA7}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TaskManager", "Coursework\Coursework.vcxproj", "{DA5AC894-BF6F-47A1-9048-E339025C9BA7}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Form", "Form\Form.vcxproj", "{5765505D-736C-421D-BBAA-24F81047EF8C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{DA5AC894-BF6F-47A1-9048-E339025C9BA7} = {DA5AC894-BF6F-47A1-9048-E339025C9BA7}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

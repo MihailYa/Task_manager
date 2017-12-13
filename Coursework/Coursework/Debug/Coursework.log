@@ -1,4 +1,5 @@
 ﻿C:\Program Files\Visual Studio Community 2017\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(387,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (Coursework.vcxproj).  This can lead to incorrect clean and rebuild behavior.
+  Alert_Manager.cpp
   Task_Manager.cpp
 c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\task_manager.cpp(59): warning C4297: 'Task_Manager::~Task_Manager': function assumed not to throw an exception but does
   c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\task_manager.cpp(59): note: destructor or deallocator has a (possibly implicit) non-throwing exception specification
@@ -11,4 +12,17 @@ c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursew
 c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\task_manager.cpp(341): warning C4244: 'initializing': conversion from 'std::streamoff' to 'unsigned int', possible loss of data
 c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\task_manager.cpp(602): warning C4244: 'initializing': conversion from 'std::streamoff' to 'unsigned int', possible loss of data
 c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\task_manager.cpp(611): warning C4244: 'initializing': conversion from 'std::streamoff' to 'unsigned int', possible loss of data
+  Skipping... (no relevant changes detected)
+  _Time.cpp
+  Task_trigger_weekly.cpp
+  Task_trigger_once.cpp
+  Task_trigger_monthly.cpp
+  Task_trigger_entrance.cpp
+  Task_trigger_dayly.cpp
+  Task_trigger.cpp
+  Task_act_prog.cpp
+  Task_act_alert.cpp
+  Task_act.cpp
+  Task_Exception.cpp
+  Task.cpp
   Coursework.vcxproj -> C:\Users\mikle\Documents\Visual Studio 2017\Projects\GitHub\Task_manager\Coursework\Debug\TaskManager.lib

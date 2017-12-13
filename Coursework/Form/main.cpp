@@ -20,6 +20,7 @@ using namespace System::Windows::Forms;
 //
 //
 // TO DO:
+// Оператива жрется refresh'ом
 
 [STAThread]
 int main(array<String^>^ args)

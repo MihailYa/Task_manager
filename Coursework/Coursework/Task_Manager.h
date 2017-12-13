@@ -150,7 +150,10 @@ private:
 		}
 	*/
 	std::fstream *m_file;
+	boost::mutex m_file_mutex;
 	std::vector<Task*> m_Tasks;
+	boost::mutex m_Tasks_mutex;
+
 	int m_last_id;
 
 	Alert_Manager *m_alert_manager;

@@ -25,21 +25,9 @@ Alert_Manager::~Alert_Manager()
 
 void Alert_Manager::add_alert(std::string header, std::string message)
 {
-	if (m_show_cycle_thread != nullptr)
-	{
-		m_show_cycle_thread_exit = true;
-		m_show_cycle_thread->join();
-		delete m_show_cycle_thread;
-		m_show_cycle_thread = nullptr;
-	}
-
+	m_alerts_mutex.lock();
 	m_alerts.push_back(alert_t(header, message));
-
-	if (m_show_cycle_thread == nullptr)
-	{
-		m_show_cycle_thread_exit = false;
-		m_show_cycle_thread = new boost::thread(boost::bind(&Alert_Manager::show_cycle, this));
-	}
+	m_alerts_mutex.unlock();
 }
 
 Alert_Manager* Alert_Manager::Get()
@@ -52,9 +40,18 @@ Alert_Manager* Alert_Manager::Get()
 
 void Alert_Manager::show_cycle()
 {
+	alert_t c_alert;
+
+	m_alerts_mutex.lock();
 	while (m_alerts.size() && !m_show_cycle_thread_exit)
 	{
-		MessageBoxA(NULL, m_alerts[0].message.c_str(), m_alerts[0].header.c_str(), MB_OK | MB_ICONINFORMATION | MB_SYSTEMMODAL);
+		c_alert = m_alerts[0];
+		m_alerts_mutex.unlock();
+
+		MessageBoxA(NULL, c_alert.message.c_str(), c_alert.header.c_str(), MB_OK | MB_ICONINFORMATION | MB_SYSTEMMODAL | MB_SETFOREGROUND);
+
+		m_alerts_mutex.lock();
 		m_alerts.erase(m_alerts.begin());
 	}
+	m_alerts_mutex.unlock();
 }
