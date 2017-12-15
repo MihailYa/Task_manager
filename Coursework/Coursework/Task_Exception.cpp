@@ -13,6 +13,8 @@ Task_Exception::~Task_Exception()
 
 void Task_Exception::delete_(Task_Exception *&ex_)
 {
+	exit(EXIT_FAILURE); // Not supported function
+	//WrongWeeklyTriggerEveryNWeek
 	switch (ex_->Get_error_code())
 	{
 	case ConfigFileNotFound:
@@ -135,6 +137,15 @@ Task_Exception::operator std::string() const
 	case WrongTime:
 		return std::string("Wrong time was specified");
 		break;
+	case WrongWeeklyTriggerEveryNWeek:
+		return std::string("Wrong \"Every n week\" was specified");
+		break;
+	case WrongMonthlyTriggerDaysVecSize:
+		return std::string("Wrong number of days was specified for monthly trigger");
+		break;
+	case WrongMonthlyTriggerMonthsVecSize:
+		return std::string("Wrong number of months was specified for monthly trigger");
+		break;
 	case AlertManagerDoesNotExist:
 		return std::string("Alert Manager does not exist");
 		break;
@@ -145,7 +156,7 @@ Task_Exception::operator std::string() const
 		return std::string("Wrong exception error code");
 		break;
 	default:
-		throw new WrongExceptionErrorCode_ex;
+		throw WrongExceptionErrorCode_ex();
 		break;
 	}
 }
@@ -205,6 +216,15 @@ std::string Task_Exception::Get_as_string_with_solution() const
 	case WrongTime:
 		return std::string("Error: Wrong time was specified\nSolution: Input another time");
 		break;
+	case WrongWeeklyTriggerEveryNWeek:
+		return std::string("Error: Wrong \"Every n week\" was specified\nSolution: Input number which is more then zero");
+		break;
+	case WrongMonthlyTriggerDaysVecSize:
+		return std::string("Error: Wrong number of days was specified for monthly trigger\nSolution: input at least one day");
+		break;
+	case WrongMonthlyTriggerMonthsVecSize:
+		return std::string("Error: Wrong number of months was specified for monthly trigger\nSolution: input at least one month");
+		break;
 	case AlertManagerDoesNotExist:
 		return std::string("Error: Alert Manager does not exist\nSolution:\n\tFor user: Restart task manager\n\tFor developer: Create Alert_Manager before calling this function");
 		break;
@@ -215,7 +235,7 @@ std::string Task_Exception::Get_as_string_with_solution() const
 		return std::string("Error: Wrong exception error code\nSolution: Restart task manager");
 		break;
 	default:
-		throw new WrongExceptionErrorCode_ex;
+		throw WrongExceptionErrorCode_ex();
 		break;
 	}
 }

@@ -20,6 +20,9 @@ enum Task_Exception_error_code_t
 	WrongActType,
 	WrongTimeFormat,
 	WrongTime,
+	WrongWeeklyTriggerEveryNWeek,
+	WrongMonthlyTriggerDaysVecSize,
+	WrongMonthlyTriggerMonthsVecSize,
 	AlertManagerDoesNotExist,
 	AlertManagerAlreadyCreated,
 	WrongExceptionErrorCode
@@ -142,6 +145,24 @@ class WrongTime_ex : public Task_Exception
 {
 public:
 	WrongTime_ex() : Task_Exception(WrongTime) {}
+};
+
+class WrongWeeklyTriggerEveryNWeek_ex : public Task_Exception
+{
+public:
+	WrongWeeklyTriggerEveryNWeek_ex() : Task_Exception(WrongWeeklyTriggerEveryNWeek) {}
+};
+
+class WrongMonthlyTriggerDaysVecSize_ex : public Task_Exception
+{
+public:
+	WrongMonthlyTriggerDaysVecSize_ex() : Task_Exception(WrongMonthlyTriggerDaysVecSize) {}
+};
+
+class WrongMonthlyTriggerMonthsVecSize_ex : public Task_Exception
+{
+public:
+	WrongMonthlyTriggerMonthsVecSize_ex() : Task_Exception(WrongMonthlyTriggerMonthsVecSize) {}
 };
 
 class AlertManagerDoesNotExist_ex : public Task_Exception

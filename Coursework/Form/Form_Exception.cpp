@@ -17,6 +17,8 @@ namespace TaskManagerForm
 
 	void Form_Exception::delete_(Form_Exception *&ex_)
 	{
+		exit(EXIT_FAILURE); // Function not supported
+		//WeeklyTrigEveryNWeekWrong
 		switch (ex_->Get_error_code())
 		{
 		case TaskManagerForm::TaskHeaderNotFound:
@@ -56,7 +58,7 @@ namespace TaskManagerForm
 			delete (TaskManagerForm::WrongExceptionErrorCode_ex*)ex_;
 			break;
 		default:
-			throw new TaskManagerForm::WrongExceptionErrorCode_ex;
+			throw TaskManagerForm::WrongExceptionErrorCode_ex();
 			break;
 		}
 	}
@@ -102,7 +104,7 @@ namespace TaskManagerForm
 			return std::string("Wrong exception error code");
 			break;
 		default:
-			throw new TaskManagerForm::WrongExceptionErrorCode_ex;
+			throw TaskManagerForm::WrongExceptionErrorCode_ex();
 			break;
 		}
 	}
@@ -148,7 +150,7 @@ namespace TaskManagerForm
 			return std::string("Error: Wrong exception error code\nSolution: Restart program");
 			break;
 		default:
-			throw new TaskManagerForm::WrongExceptionErrorCode_ex;
+			throw TaskManagerForm::WrongExceptionErrorCode_ex();
 			break;
 		}
 	}

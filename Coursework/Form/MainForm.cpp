@@ -16,19 +16,15 @@ namespace TaskManagerForm
 		m_check_show_thread->Start();
 
 		InitializeComponent();
-		//
-		//TODO: Konstruktorcode hier hinzufügen.
-		//
 
 		try
 		{
 			m_TaskManager = new Task_Manager(CONFIG_FILE_NAME, entrance);
 			refresh();
 		}
-		catch (Task_Exception *&e)
+		catch (Task_Exception &e)
 		{
-			MessageBox::Show(gcnew String(e->Get_as_string_with_solution().c_str()), "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
-			Task_Exception::delete_(e);
+			MessageBox::Show(gcnew String(e.Get_as_string_with_solution().c_str()), "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
 		}
 	}
 
@@ -132,6 +128,7 @@ namespace TaskManagerForm
 				id = atoi(msclr::interop::marshal_as<std::string>(this->TaskList->Rows[e->RowIndex]->Cells[0]->Value->ToString()).c_str());
 				m_TaskManager->delete_task(id);
 				refresh();
+				MessageBox::Show(L"Task was successfully deleted!", L"Info", MessageBoxButtons::OK, MessageBoxIcon::Information);
 			}
 			else if (e->ColumnIndex == 5)
 			{
@@ -141,13 +138,13 @@ namespace TaskManagerForm
 				{
 					std::string file_name = msclr::interop::marshal_as<std::string>(ExportTask->SelectedPath) + "/Task.tm";
 					m_TaskManager->export_task(file_name.c_str(), id);
+					MessageBox::Show(L"Task was successfully exported!", L"Info", MessageBoxButtons::OK, MessageBoxIcon::Information);
 				}
 			}
 		}
-		catch (Task_Exception *&e)
+		catch (Task_Exception &e)
 		{
-			MessageBox::Show(gcnew String(e->Get_as_string_with_solution().c_str()), "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
-			Task_Exception::delete_(e);
+			MessageBox::Show(gcnew String(e.Get_as_string_with_solution().c_str()), "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
 		}
 	}
 	System::Void MainForm::importTaskToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e)
@@ -161,12 +158,13 @@ namespace TaskManagerForm
 				std::string file_name = msclr::interop::marshal_as<std::string>(ImportTask->FileName);
 				m_TaskManager->import_task(file_name.c_str());
 				refresh();
+				MessageBox::Show(L"Task was successfully imported!", L"Info", MessageBoxButtons::OK, MessageBoxIcon::Information);
 			}
 		}
-		catch (Task_Exception *&e)
+		catch (Task_Exception &e)
 		{
-			MessageBox::Show(gcnew String(e->Get_as_string_with_solution().c_str()), "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
-			Task_Exception::delete_(e);
+			MessageBox::Show(gcnew String(e.Get_as_string_with_solution().c_str()), "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
+	
 		}
 	}
 	System::Void MainForm::MainForm_FormClosing(System::Object^  sender, System::Windows::Forms::FormClosingEventArgs^  e)

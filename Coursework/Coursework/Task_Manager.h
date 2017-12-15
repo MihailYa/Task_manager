@@ -43,14 +43,14 @@ private:
 	* @param from_waiter - if function was called from delete_task_waiter function
 	* @exceptions TaskIdDoesNotExist, ConfigFileCorrupted
 	*/
-	void delete_task_private(unsigned int id_, bool from_waiter);
+	void delete_task_private(unsigned int id_);
 
-	void delete_task_waiter(unsigned int id_);
+	//void delete_task_waiter(unsigned int id_);
 
 	/**
 	* Safely continue program after exception
 	*/
-	void safely_continue();
+	//void safely_continue();
 
 	/**
 	* Read from file @n bytes and check on errors
@@ -155,6 +155,7 @@ private:
 	boost::mutex m_Tasks_mutex;
 
 	int m_last_id;
+	boost::mutex m_last_id_mutex;
 
 	Alert_Manager *m_alert_manager;
 

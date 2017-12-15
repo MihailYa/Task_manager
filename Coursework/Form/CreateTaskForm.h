@@ -78,19 +78,6 @@ namespace TaskManagerForm {
 	private: System::Windows::Forms::ComboBox^  ActType;
 	private: System::Windows::Forms::Label^  ActTypeLabel;
 
-
-
-
-	protected:
-
-
-
-
-	protected:
-
-	protected:
-
-
 	private:
 		/// <summary>
 		/// Required designer variable.
@@ -286,6 +273,8 @@ namespace TaskManagerForm {
 			this->TrigPrior->Name = L"TrigPrior";
 			this->TrigPrior->Size = System::Drawing::Size(108, 22);
 			this->TrigPrior->TabIndex = 12;
+			this->TrigPrior->Maximum = 100;
+			this->TrigPrior->Minimum = 1;
 			// 
 			// WeeklyBox
 			// 
@@ -410,6 +399,8 @@ namespace TaskManagerForm {
 			this->WeeklyEveryNWeek->Name = L"WeeklyEveryNWeek";
 			this->WeeklyEveryNWeek->Size = System::Drawing::Size(108, 22);
 			this->WeeklyEveryNWeek->TabIndex = 0;
+			this->WeeklyEveryNWeek->Minimum = 1;
+			this->WeeklyEveryNWeek->Maximum = 100;
 			// 
 			// MonthlyBox
 			// 

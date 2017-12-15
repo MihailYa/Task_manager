@@ -33,7 +33,7 @@ Task::Task(const Task &right)
 		trigger = new Task_trigger_entrance(*((Task_trigger_entrance*)right.trigger));
 		break;
 	default:
-		throw new WrongTriggerType_ex;
+		throw WrongTriggerType_ex();
 		break;
 	}
 
@@ -46,7 +46,7 @@ Task::Task(const Task &right)
 		act = new Task_act_prog(*((Task_act_prog*)right.trigger));
 		break;
 	default:
-		throw new WrongActType_ex;
+		throw WrongActType_ex();
 		break;
 	}
 }
@@ -127,7 +127,7 @@ void Task::output()
 		s2 = ((Task_act_prog*)act)->Get_prog_params();
 		break;
 	default:
-		throw new WrongActType_ex;
+		throw WrongActType_ex();
 		break;
 	}
 	printf("\nName:\n%s\nText:\n%s\n", s1.c_str(), s2.c_str());

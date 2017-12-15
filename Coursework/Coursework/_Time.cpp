@@ -13,7 +13,7 @@ Time::Time(unsigned int year_, unsigned int month_, unsigned int day_, unsigned 
 {
 	if (year_ < 1400 || month_ <= 0 || month_ > 12 || day_ > boost::gregorian::date(year_, month_, 1).end_of_month().day() || hours_ >= 24 || minutes_ >= 60)
 	{
-		throw new WrongTimeFormat_ex;
+		throw WrongTimeFormat_ex();
 	}
 
 	time.dat = boost::gregorian::date(year_, month_, day_);
@@ -45,7 +45,7 @@ unsigned int Time::to_minute_left()
 	time_t c_time = std::time(NULL);
 	tm *tm_c_time;
 	tm_c_time = std::localtime(&c_time);
-	
+
 	unsigned int n;
 	if (tm_c_time->tm_sec == 0)
 		n = 0;
@@ -99,45 +99,107 @@ void Time::Set_next_weekday(const boost::date_time::weekdays wday_)
 
 	time.dat += boost::gregorian::date_duration(inc);
 }
-void Time::Set_next_month_day(const std::vector<boost::date_time::months_of_year> month_list, const std::vector<unsigned int> days_list)
+void Time::Set_next_month_day(const std::vector<boost::gregorian::months_of_year> month_list, const std::vector<unsigned int> days_list)
 {
-	// Find nearly year and month
-	boost::gregorian::date tmp;
-	unsigned int m_index = 0;
-	
-	while (
-		(m_index < month_list.size())
-		&&
-		((tmp = boost::gregorian::date(time.dat.year(), month_list[m_index], boost::gregorian::date(time.dat.year(), month_list[m_index], 1).end_of_month().day())) < time.dat)
-		)
-	{
-		m_index++;
-	}
-	if (tmp < time.dat)
-	{
-		tmp = boost::gregorian::date(time.dat.year() + 1, month_list[0], time.dat.day());
-	}
+	if (month_list.size() == 0 || days_list.size() == 0)
+		return;
 
-	// Find nearly day
-	unsigned int d_index = 0;
-	while (
-		(d_index < days_list.size())
-		&&
-		(tmp = boost::gregorian::date(tmp.year(), tmp.month(), days_list[d_index])) < time.dat
-		)
+	std::vector<boost::gregorian::months_of_year>::const_iterator month = std::lower_bound(month_list.cbegin(), month_list.cend(), time.dat.month().as_enum());//std::find_if(month_list.begin(), month_list.end(), std::bind<bool>(std::greater_equal<boost::date_time::months_of_year>(), _1, time.dat.month()));
+	std::vector<unsigned int>::const_iterator day;
+	unsigned int year = time.dat.year();
+	if (month == month_list.cend())
 	{
-		d_index++;
+		month = month_list.begin();
+		++year;
+		day = days_list.begin();
 	}
-
-	if (tmp < time.dat)
-		if ((m_index += 1) >= month_list.size())
-			tmp = boost::gregorian::date(tmp.year() + 1, month_list[0], days_list[0]);
-		else
-			tmp = boost::gregorian::date(tmp.year(), month_list[m_index], days_list[0]);
 	else
-		tmp = boost::gregorian::date(tmp.year(), month_list[m_index], days_list[d_index]);
+	{
+		if (*month == time.dat.month())
+		{
+			day = std::lower_bound(days_list.begin(), days_list.end(), time.dat.day().as_number());//std::find_if(days_list.begin(), days_list.end(), std::bind<bool>(std::greater_equal<unsigned int>(), _1, time.dat.day()));
+			if (day == days_list.end())
+			{
+				day = days_list.begin();
+				++month;
+				if (month == month_list.end())
+				{
+					month = month_list.begin();
+					++year;
+				}
+			}
+		}
+		else
+			day = days_list.begin();
+	}
+	while (boost::gregorian::date(year, *month, 1).end_of_month().day() < *day)
+	{
+		day = days_list.begin();
+		++month;
+		if (month == month_list.end())
+		{
+			month = month_list.begin();
+			++year;
+		}
+	}
+	time.dat = boost::gregorian::date(year, *month, *day);
 
-	time.dat = tmp;
+	/*day = std::find_if(days_list.begin(), days_list.end(), std::bind(std::greater<unsigned int>(), time.dat.day()));
+	if (day == days_list.end())
+	{
+		day = days_list.begin();
+		month = std::find(month_list.begin(), month_list.end(), time.dat.month());
+		month++;
+		if (month == month_list.end())
+			time.dat = boost::gregorian::date(time.dat.year()+1, month_list[0], days_list[0]);
+		else
+			time.dat = boost::gregorian::date(time.dat.year(), *month, days_list[0]);
+	}
+	else
+		time.dat = boost::gregorian::date(time.dat.year(), time.dat.month(), *day);
+*/
+// CONTINUE HERE
+
+
+/*
+// Find nearly year and month
+boost::gregorian::date tmp;
+unsigned int m_index = 0;
+
+while (
+	(m_index < month_list.size())
+	&&
+	((tmp = boost::gregorian::date(time.dat.year(), month_list[m_index], boost::gregorian::date(time.dat.year(), month_list[m_index], 1).end_of_month().day())) < time.dat)
+	)
+{
+	m_index++;
+}
+if (tmp < time.dat)
+{
+	tmp = boost::gregorian::date(time.dat.year() + 1, month_list[0], time.dat.day());
+}
+
+// Find nearly day
+unsigned int d_index = 0;
+while (
+	(d_index < days_list.size())
+	&&
+	(tmp = boost::gregorian::date(tmp.year(), tmp.month(), days_list[d_index])) < time.dat
+	)
+{
+	d_index++;
+}
+
+if (tmp < time.dat)
+	if ((m_index += 1) >= month_list.size())
+		tmp = boost::gregorian::date(tmp.year() + 1, month_list[0], days_list[0]);
+	else
+		tmp = boost::gregorian::date(tmp.year(), month_list[m_index], days_list[0]);
+else
+	tmp = boost::gregorian::date(tmp.year(), month_list[m_index], days_list[d_index]);
+
+time.dat = tmp;
+*/
 }
 
 //
@@ -177,7 +239,7 @@ const int Time::operator-(const Time& right) const
 		if (time_left >= 0)
 			return time_left;
 	}
-	
+
 	return INF;
 }
 

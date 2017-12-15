@@ -39,10 +39,14 @@ namespace TaskManagerForm
 			trigger = InputTrigger();
 			act = InputAct();
 		}
-		catch (Form_Exception *&e)
+		catch (Task_Exception &e)
 		{
-			MessageBox::Show(gcnew String(e->Get_as_string_with_solution().c_str()), L"Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
-			TaskManagerForm::Form_Exception::delete_(e);
+			MessageBox::Show(gcnew String(e.Get_as_string_with_solution().c_str()), L"Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
+			return;
+		}
+		catch (Form_Exception &e)
+		{
+			MessageBox::Show(gcnew String(e.Get_as_string_with_solution().c_str()), L"Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
 			return;
 		}
 
@@ -57,10 +61,10 @@ namespace TaskManagerForm
 		Task_header_t tmp;
 		tmp.name = msclr::interop::marshal_as<std::string>(this->TaskName->Text);
 		if (tmp.name == "")
-			throw new TaskManagerForm::TaskHeaderNotFound_ex;
+			throw TaskManagerForm::TaskHeaderNotFound_ex();
 		tmp.desc = msclr::interop::marshal_as<std::string>(this->TaskDesc->Text);
 		if (tmp.desc == "")
-			throw new TaskManagerForm::TaskDescNotFound_ex;
+			throw TaskManagerForm::TaskDescNotFound_ex();
 		return tmp;
 	}
 
@@ -81,10 +85,9 @@ namespace TaskManagerForm
 				atoi(tmp_str.substr(8, 2).c_str()),
 				atoi(tmp_str.substr(10, 2).c_str()));
 		}
-		catch (WrongTimeFormat_ex *&e)
+		catch (WrongTimeFormat_ex &e)
 		{
-			delete e;
-			throw new TrigTimeWrongFormat_ex;
+			throw TrigTimeWrongFormat_ex();
 		}
 
 		unsigned int n;
@@ -93,19 +96,26 @@ namespace TaskManagerForm
 		if (type == WEEKLY)
 		{
 			n = atoi(msclr::interop::marshal_as<std::string>(this->WeeklyEveryNWeek->Text).c_str());
+			if (n <= 0)
+				throw WrongWeeklyTriggerEveryNWeek_ex();
 		}
 		else if (type == MONTHLY)
 		{
 			IEnumerator^ DaysEnum = this->MonthlyDays->CheckedIndices->GetEnumerator();
 			while (DaysEnum->MoveNext())
 			{
-				days.push_back(static_cast<unsigned int>(DaysEnum->Current));
+				days.push_back(atoi(msclr::interop::marshal_as<std::string>(DaysEnum->Current->ToString()).c_str()) + 1);
 			}
+			if (days.size() == 0)
+				throw WrongMonthlyTriggerDaysVecSize_ex();
+
 			IEnumerator^ MonthsEnum = this->MonthlyMonths->CheckedIndices->GetEnumerator();
 			while (MonthsEnum->MoveNext())
 			{
-				months.push_back(static_cast<boost::date_time::months_of_year>(static_cast<unsigned int>(MonthsEnum->Current)));
+				months.push_back(static_cast<boost::date_time::months_of_year>(atoi(msclr::interop::marshal_as<std::string>(MonthsEnum->Current->ToString()).c_str()) + 1));
 			}
+			if (months.size() == 0)
+				throw WrongMonthlyTriggerMonthsVecSize_ex();
 		}
 
 		switch (type)
@@ -126,7 +136,7 @@ namespace TaskManagerForm
 			tmp = new Task_trigger_entrance(time, priority);
 			break;
 		default:
-			throw new WrongTriggerType_ex;
+			throw WrongTriggerType_ex();
 			break;
 		}
 		return tmp;
@@ -143,7 +153,7 @@ namespace TaskManagerForm
 		case PROG:
 			name = msclr::interop::marshal_as<std::string>(this->ProgramName->Text);
 			if (name == "")
-				throw new TaskManagerForm::ProgActNameNotFound_ex;
+				throw TaskManagerForm::ProgActNameNotFound_ex();
 
 			text = msclr::interop::marshal_as<std::string>(this->ProgramParams->Text);
 			
@@ -153,17 +163,17 @@ namespace TaskManagerForm
 			name = msclr::interop::marshal_as<std::string>(this->MessageName->Text);
 			
 			if (name == "")
-				throw new TaskManagerForm::MessageActHeaderNotFound_ex;
+				throw TaskManagerForm::MessageActHeaderNotFound_ex();
 
 			text = msclr::interop::marshal_as<std::string>(this->MessageText->Text);
 
 			if (text == "")
-				throw new TaskManagerForm::MessageActTextNotFound_ex;
+				throw TaskManagerForm::MessageActTextNotFound_ex();
 
 			tmp = new Task_act_alert(name, text);
 			break;
 		default:
-			throw new WrongActType_ex;
+			throw WrongActType_ex();
 			break;
 		}
 

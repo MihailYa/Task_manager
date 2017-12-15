@@ -1,13 +1,4 @@
 // CppCLR_WinformsProjekt.cpp: Hauptprojektdatei.
-
-// #include "stdafx.h"
-// using namespace System;
-
-//int main(array<System::String ^> ^args)
-//{
-//    Console::WriteLine(L"Hello World");
-//    return 0;
-//}
 #include "stdafx.h"
 #include "MainForm.h"
 
@@ -21,6 +12,7 @@ using namespace System::Windows::Forms;
 //
 // TO DO:
 // Оператива жрется refresh'ом
+// Fix problem with too many refreshes when 18:59 -> 19:00
 
 [STAThread]
 int main(array<String^>^ args)
