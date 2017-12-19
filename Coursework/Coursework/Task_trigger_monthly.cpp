@@ -19,15 +19,15 @@ Task_trigger_monthly::Task_trigger_monthly(Time time_, unsigned int priority_, c
 
 bool Task_trigger_monthly::calculate_time_left(Time c_time)
 {
-	if (time < c_time)
+	if (time < c_time || is_not_calculated)
 	{
+		is_not_calculated = false;
 		Time_t tmp = time.Get_time();
 		time = Time(c_time.Get_dat(), tmp.hours, tmp.minutes);
 		if (time < c_time)
 			time += 1;
 		time.Set_next_month_day(month_list, days_list);
 	}
-
 	time_left = time - c_time;
 
 	return true;

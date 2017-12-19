@@ -49,8 +49,10 @@ public:
 		
 protected:
 	Trigger_type_t type;
-	Time time;
+	Time time;		 // Time of next triggering
+	Time time_begin; // Time from which begin triggering
 	unsigned int priority;
 	unsigned int time_left; // In minutes
+	bool is_not_calculated;
 };
 

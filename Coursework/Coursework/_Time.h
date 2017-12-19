@@ -87,6 +87,7 @@ public:
 	const bool operator>(const Time& right) const;
 	const bool operator>=(const Time& right) const;
 	const bool operator<(const Time& right) const;
+	const bool operator<=(const Time& right) const;
 	const bool operator==(const Time& right) const;
 	const bool operator!=(const Time& right) const;
 

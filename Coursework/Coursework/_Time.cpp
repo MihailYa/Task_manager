@@ -233,9 +233,9 @@ const Time Time::operator+=(const int num_of_days)
 
 const int Time::operator-(const Time& right) const
 {
-	if (time.dat == right.time.dat && time.hours == right.time.hours)
+	if (time.dat == right.time.dat)
 	{
-		int time_left = time.minutes - right.time.minutes;
+		int time_left = time.minutes - right.time.minutes + (time.hours - right.time.hours)*60;
 		if (time_left >= 0)
 			return time_left;
 	}
@@ -316,6 +316,14 @@ const bool Time::operator<(const Time& right) const
 {
 	if (*this != right)
 		return !(*this > right);
+
+	return false;
+}
+
+const bool Time::operator<=(const Time& right) const
+{
+	if (*this < right || *this == right)
+		return true;
 
 	return false;
 }

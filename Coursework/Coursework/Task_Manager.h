@@ -162,6 +162,7 @@ private:
 	// Waiter:
 	bool m_stop_waiting;
 	bool m_exit;
+	Time m_last_refresh;
 	//System::Threading::Thread ^m_waiter_cycle_thread;
 	//std::thread *m_waiter_cycle_thread;
 	//gcroot<System::Threading::Thread ^> m_waiter_cycle_thread;

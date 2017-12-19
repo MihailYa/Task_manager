@@ -9,17 +9,20 @@ Task_trigger_weekly::Task_trigger_weekly(Time time_, unsigned int priority_, boo
 
 bool Task_trigger_weekly::calculate_time_left(Time c_time)
 {
-	if (time < c_time)
+	if (time < c_time || is_not_calculated)
+	{
+		is_not_calculated = false;
 		time.Set_next_weekday(week_day);
 
-	if (time < c_time)
-	{
-		int num_of_weeks = c_time%time;
-		int num_of_weeks_add = (num_of_weeks / every_n_week)*every_n_week;
-		time += num_of_weeks_add * 7;
+		if (time < c_time)
+		{
+			int num_of_weeks = c_time%time;
+			int num_of_weeks_add = (num_of_weeks / every_n_week)*every_n_week;
+			time += num_of_weeks_add * 7;
+		}
+		if (time < c_time)
+			time += every_n_week * 7;
 	}
-	if (time < c_time)
-		time += every_n_week * 7;
 
 	time_left = time - c_time;
 

@@ -917,6 +917,7 @@ void Task_Manager::refresh()
 	printf("\nRefresh task list...");
 #endif // DEBUG
 	Time c_time = Time::current_time();
+	m_last_refresh = c_time;
 
 	m_Tasks_mutex.lock();
 	int n = m_Tasks.size();
@@ -971,6 +972,10 @@ void Task_Manager::waiter()
 		printf("To wait: INF");
 #endif // DEBUG
 		seconds = Time::to_hour_left();
+
+		if (seconds == 0 && m_last_refresh == Time::current_time())
+			seconds = 3600;
+
 		for (unsigned int i = 0; i < seconds; ++i)
 		{
 			if (m_stop_waiting || m_exit)

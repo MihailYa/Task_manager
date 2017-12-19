@@ -2,7 +2,7 @@
 #include "stdafx.h"
 #include "MainForm.h"
 
-//#define SHOW_FORM
+#define SHOW_FORM
 
 using namespace System;
 using namespace System::Windows::Forms;
