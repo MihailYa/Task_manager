@@ -1,10 +1,21 @@
 ﻿C:\Program Files\Visual Studio Community 2017\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(387,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (Coursework.vcxproj).  This can lead to incorrect clean and rebuild behavior.
+  _Time.cpp
+c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\_time.cpp(38): warning C4996: 'localtime': This function or variable may be unsafe. Consider using localtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.16299.0\ucrt\time.h(505): note: see declaration of 'localtime'
+c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\_time.cpp(47): warning C4996: 'localtime': This function or variable may be unsafe. Consider using localtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.16299.0\ucrt\time.h(505): note: see declaration of 'localtime'
+c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\_time.cpp(62): warning C4996: 'localtime': This function or variable may be unsafe. Consider using localtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.16299.0\ucrt\time.h(505): note: see declaration of 'localtime'
+c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\_time.cpp(347): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 1 has type 'boost::gregorian::greg_year'
+c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\_time.cpp(347): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 2 has type 'boost::gregorian::greg_month'
+c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\_time.cpp(347): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 3 has type 'boost::gregorian::greg_day'
   Task_trigger_weekly.cpp
+  Task_trigger_once.cpp
   Task_trigger_monthly.cpp
+  Task_trigger_entrance.cpp
   Task_trigger_dayly.cpp
   Task_trigger.cpp
-  Task_trigger_once.cpp
-  Task_trigger_entrance.cpp
+  Task_act_alert.cpp
   Task_Manager.cpp
 c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\task_manager.cpp(59): warning C4297: 'Task_Manager::~Task_Manager': function assumed not to throw an exception but does
   c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\task_manager.cpp(59): note: destructor or deallocator has a (possibly implicit) non-throwing exception specification
@@ -20,5 +31,8 @@ c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursew
 c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\task_manager.cpp(245): warning C4101: 'e': unreferenced local variable
 c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\task_manager.cpp(402): warning C4244: 'initializing': conversion from 'std::streamoff' to 'unsigned int', possible loss of data
 c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\task_manager.cpp(411): warning C4244: 'initializing': conversion from 'std::streamoff' to 'unsigned int', possible loss of data
+  Task_Exception.cpp
   Task.cpp
+  Skipping... (no relevant changes detected)
+  Alert_Manager.cpp
   Coursework.vcxproj -> C:\Users\mikle\Documents\Visual Studio 2017\Projects\GitHub\Task_manager\Coursework\Debug\TaskManager.lib
