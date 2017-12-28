@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #include "CreateTaskForm.h"
 #define CONFIG_FILE_NAME "C:/Users/mikle/Documents/Visual Studio 2017/Projects/GitHub/Task_manager/Coursework/Debug/TasksConfig.tm"
+//#define CONFIG_FILE_NAME "TasksConfig.tm"
 
 namespace TaskManagerForm {
 	using namespace System;
