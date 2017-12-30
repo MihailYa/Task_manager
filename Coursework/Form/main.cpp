@@ -7,13 +7,6 @@
 using namespace System;
 using namespace System::Windows::Forms;
 
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-//
-//
-// TO DO:
-// Оператива жрется refresh'ом
-// Fix problem with too many refreshes when 18:59 -> 19:00
-
 [STAThread]
 int main(array<String^>^ args)
 {

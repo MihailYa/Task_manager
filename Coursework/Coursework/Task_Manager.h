@@ -6,6 +6,9 @@
 struct Task_Info_t
 {
 	Task_header_t header;
+	Trigger_type_t type;
+	std::string time_begin;
+	unsigned int priority;
 	int time_left;
 };
 

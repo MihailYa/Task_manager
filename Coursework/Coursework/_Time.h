@@ -66,6 +66,7 @@ public:
 	//
 	boost::gregorian::date Get_dat() const;
 	Time_t Get_time() const;
+	std::string Get_as_string() const;
 
 	//
 	// Operators

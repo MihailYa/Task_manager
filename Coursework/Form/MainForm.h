@@ -37,12 +37,12 @@ namespace TaskManagerForm {
 
 	private: System::Windows::Forms::Label^  ListHeader;
 	private: System::Windows::Forms::DataGridView^  TaskList;
-	private: System::Windows::Forms::DataGridViewTextBoxColumn^  TaskId;
-	private: System::Windows::Forms::DataGridViewTextBoxColumn^  TaskName;
-	private: System::Windows::Forms::DataGridViewTextBoxColumn^  TaskDescription;
-	private: System::Windows::Forms::DataGridViewTextBoxColumn^  TimeLeft;
-	private: System::Windows::Forms::DataGridViewButtonColumn^  DeleteTask;
-	private: System::Windows::Forms::DataGridViewButtonColumn^  TaskExport;
+
+
+
+
+
+
 	private: System::Windows::Forms::Button^  RefreshButton;
 
 
@@ -68,7 +68,16 @@ namespace TaskManagerForm {
 		bool m_check_show_thread_exit;
 		bool m_exit;
 		bool m_hide;
-		static MainForm^ m_this;
+	private: System::Windows::Forms::DataGridViewTextBoxColumn^  TaskId;
+	private: System::Windows::Forms::DataGridViewTextBoxColumn^  Time_begin;
+	private: System::Windows::Forms::DataGridViewTextBoxColumn^  Trigger_type;
+	private: System::Windows::Forms::DataGridViewTextBoxColumn^  Priority;
+	private: System::Windows::Forms::DataGridViewTextBoxColumn^  TaskName;
+	private: System::Windows::Forms::DataGridViewTextBoxColumn^  TaskDescription;
+	private: System::Windows::Forms::DataGridViewTextBoxColumn^  TimeLeft;
+	private: System::Windows::Forms::DataGridViewButtonColumn^  DeleteTask;
+	private: System::Windows::Forms::DataGridViewButtonColumn^  TaskExport;
+			 static MainForm^ m_this;
 
 #pragma region Windows Form Designer generated code
 		/// <summary>
@@ -79,12 +88,6 @@ namespace TaskManagerForm {
 		{
 			this->ListHeader = (gcnew System::Windows::Forms::Label());
 			this->TaskList = (gcnew System::Windows::Forms::DataGridView());
-			this->TaskId = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
-			this->TaskName = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
-			this->TaskDescription = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
-			this->TimeLeft = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
-			this->DeleteTask = (gcnew System::Windows::Forms::DataGridViewButtonColumn());
-			this->TaskExport = (gcnew System::Windows::Forms::DataGridViewButtonColumn());
 			this->RefreshButton = (gcnew System::Windows::Forms::Button());
 			this->menuStrip1 = (gcnew System::Windows::Forms::MenuStrip());
 			this->toolStripMenuItem1 = (gcnew System::Windows::Forms::ToolStripMenuItem());
@@ -93,6 +96,15 @@ namespace TaskManagerForm {
 			this->exitToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->ExportTask = (gcnew System::Windows::Forms::FolderBrowserDialog());
 			this->ImportTask = (gcnew System::Windows::Forms::OpenFileDialog());
+			this->TaskId = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->Time_begin = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->Trigger_type = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->Priority = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->TaskName = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->TaskDescription = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->TimeLeft = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->DeleteTask = (gcnew System::Windows::Forms::DataGridViewButtonColumn());
+			this->TaskExport = (gcnew System::Windows::Forms::DataGridViewButtonColumn());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->TaskList))->BeginInit();
 			this->menuStrip1->SuspendLayout();
 			this->SuspendLayout();
@@ -113,16 +125,72 @@ namespace TaskManagerForm {
 			this->TaskList->AllowUserToDeleteRows = false;
 			this->TaskList->ColumnHeadersHeight = 30;
 			this->TaskList->ColumnHeadersHeightSizeMode = System::Windows::Forms::DataGridViewColumnHeadersHeightSizeMode::DisableResizing;
-			this->TaskList->Columns->AddRange(gcnew cli::array< System::Windows::Forms::DataGridViewColumn^  >(6) {
-				this->TaskId, this->TaskName,
-					this->TaskDescription, this->TimeLeft, this->DeleteTask, this->TaskExport
+			this->TaskList->Columns->AddRange(gcnew cli::array< System::Windows::Forms::DataGridViewColumn^  >(9) {
+				this->TaskId, this->Time_begin,
+					this->Trigger_type, this->Priority, this->TaskName, this->TaskDescription, this->TimeLeft, this->DeleteTask, this->TaskExport
 			});
-			this->TaskList->Location = System::Drawing::Point(18, 69);
+			this->TaskList->Location = System::Drawing::Point(18, 86);
 			this->TaskList->Name = L"TaskList";
 			this->TaskList->RowTemplate->Height = 24;
-			this->TaskList->Size = System::Drawing::Size(653, 150);
+			this->TaskList->Size = System::Drawing::Size(1046, 150);
 			this->TaskList->TabIndex = 2;
 			this->TaskList->CellClick += gcnew System::Windows::Forms::DataGridViewCellEventHandler(this, &MainForm::TaskList_CellClick);
+			// 
+			// RefreshButton
+			// 
+			this->RefreshButton->Cursor = System::Windows::Forms::Cursors::Hand;
+			this->RefreshButton->Location = System::Drawing::Point(18, 242);
+			this->RefreshButton->Name = L"RefreshButton";
+			this->RefreshButton->Size = System::Drawing::Size(75, 23);
+			this->RefreshButton->TabIndex = 3;
+			this->RefreshButton->Text = L"Refresh";
+			this->RefreshButton->UseVisualStyleBackColor = true;
+			this->RefreshButton->Click += gcnew System::EventHandler(this, &MainForm::RefreshButton_Click);
+			// 
+			// menuStrip1
+			// 
+			this->menuStrip1->ImageScalingSize = System::Drawing::Size(20, 20);
+			this->menuStrip1->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(1) { this->toolStripMenuItem1 });
+			this->menuStrip1->Location = System::Drawing::Point(0, 0);
+			this->menuStrip1->Name = L"menuStrip1";
+			this->menuStrip1->Size = System::Drawing::Size(1105, 28);
+			this->menuStrip1->TabIndex = 4;
+			this->menuStrip1->Text = L"menuStrip1";
+			// 
+			// toolStripMenuItem1
+			// 
+			this->toolStripMenuItem1->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(3) {
+				this->createTaskToolStripMenuItem,
+					this->importTaskToolStripMenuItem, this->exitToolStripMenuItem
+			});
+			this->toolStripMenuItem1->Name = L"toolStripMenuItem1";
+			this->toolStripMenuItem1->Size = System::Drawing::Size(44, 24);
+			this->toolStripMenuItem1->Text = L"File";
+			// 
+			// createTaskToolStripMenuItem
+			// 
+			this->createTaskToolStripMenuItem->Name = L"createTaskToolStripMenuItem";
+			this->createTaskToolStripMenuItem->Size = System::Drawing::Size(159, 26);
+			this->createTaskToolStripMenuItem->Text = L"Create task";
+			this->createTaskToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::createTaskToolStripMenuItem_Click);
+			// 
+			// importTaskToolStripMenuItem
+			// 
+			this->importTaskToolStripMenuItem->Name = L"importTaskToolStripMenuItem";
+			this->importTaskToolStripMenuItem->Size = System::Drawing::Size(159, 26);
+			this->importTaskToolStripMenuItem->Text = L"Import task";
+			this->importTaskToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::importTaskToolStripMenuItem_Click);
+			// 
+			// exitToolStripMenuItem
+			// 
+			this->exitToolStripMenuItem->Name = L"exitToolStripMenuItem";
+			this->exitToolStripMenuItem->Size = System::Drawing::Size(159, 26);
+			this->exitToolStripMenuItem->Text = L"Exit";
+			this->exitToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::exitToolStripMenuItem_Click);
+			// 
+			// ImportTask
+			// 
+			this->ImportTask->Filter = L"Task files (.tm)|*.tm";
 			// 
 			// TaskId
 			// 
@@ -131,6 +199,21 @@ namespace TaskManagerForm {
 			this->TaskId->Name = L"TaskId";
 			this->TaskId->ReadOnly = true;
 			this->TaskId->Width = 48;
+			// 
+			// Time_begin
+			// 
+			this->Time_begin->HeaderText = L"Begin time";
+			this->Time_begin->Name = L"Time_begin";
+			// 
+			// Trigger_type
+			// 
+			this->Trigger_type->HeaderText = L"Trigger type";
+			this->Trigger_type->Name = L"Trigger_type";
+			// 
+			// Priority
+			// 
+			this->Priority->HeaderText = L"Priority";
+			this->Priority->Name = L"Priority";
 			// 
 			// TaskName
 			// 
@@ -170,67 +253,11 @@ namespace TaskManagerForm {
 			this->TaskExport->Name = L"TaskExport";
 			this->TaskExport->Width = 54;
 			// 
-			// RefreshButton
-			// 
-			this->RefreshButton->Cursor = System::Windows::Forms::Cursors::Hand;
-			this->RefreshButton->Location = System::Drawing::Point(518, 40);
-			this->RefreshButton->Name = L"RefreshButton";
-			this->RefreshButton->Size = System::Drawing::Size(75, 23);
-			this->RefreshButton->TabIndex = 3;
-			this->RefreshButton->Text = L"Refresh";
-			this->RefreshButton->UseVisualStyleBackColor = true;
-			this->RefreshButton->Click += gcnew System::EventHandler(this, &MainForm::RefreshButton_Click);
-			// 
-			// menuStrip1
-			// 
-			this->menuStrip1->ImageScalingSize = System::Drawing::Size(20, 20);
-			this->menuStrip1->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(1) { this->toolStripMenuItem1 });
-			this->menuStrip1->Location = System::Drawing::Point(0, 0);
-			this->menuStrip1->Name = L"menuStrip1";
-			this->menuStrip1->Size = System::Drawing::Size(767, 28);
-			this->menuStrip1->TabIndex = 4;
-			this->menuStrip1->Text = L"menuStrip1";
-			// 
-			// toolStripMenuItem1
-			// 
-			this->toolStripMenuItem1->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(3) {
-				this->createTaskToolStripMenuItem,
-					this->importTaskToolStripMenuItem, this->exitToolStripMenuItem
-			});
-			this->toolStripMenuItem1->Name = L"toolStripMenuItem1";
-			this->toolStripMenuItem1->Size = System::Drawing::Size(44, 24);
-			this->toolStripMenuItem1->Text = L"File";
-			// 
-			// createTaskToolStripMenuItem
-			// 
-			this->createTaskToolStripMenuItem->Name = L"createTaskToolStripMenuItem";
-			this->createTaskToolStripMenuItem->Size = System::Drawing::Size(159, 26);
-			this->createTaskToolStripMenuItem->Text = L"Create task";
-			this->createTaskToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::createTaskToolStripMenuItem_Click);
-			// 
-			// importTaskToolStripMenuItem
-			// 
-			this->importTaskToolStripMenuItem->Name = L"importTaskToolStripMenuItem";
-			this->importTaskToolStripMenuItem->Size = System::Drawing::Size(159, 26);
-			this->importTaskToolStripMenuItem->Text = L"Import task";
-			this->importTaskToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::importTaskToolStripMenuItem_Click);
-			// 
-			// exitToolStripMenuItem
-			// 
-			this->exitToolStripMenuItem->Name = L"exitToolStripMenuItem";
-			this->exitToolStripMenuItem->Size = System::Drawing::Size(159, 26);
-			this->exitToolStripMenuItem->Text = L"Exit";
-			this->exitToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::exitToolStripMenuItem_Click);
-			// 
-			// ImportTask
-			// 
-			this->ImportTask->Filter = L"Task files (.tm)|*.tm";
-			// 
 			// MainForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(8, 16);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-			this->ClientSize = System::Drawing::Size(767, 464);
+			this->ClientSize = System::Drawing::Size(1105, 288);
 			this->Controls->Add(this->RefreshButton);
 			this->Controls->Add(this->TaskList);
 			this->Controls->Add(this->ListHeader);
