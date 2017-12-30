@@ -40,6 +40,8 @@ public:
 	//
 	unsigned int Get_id() const { return header.id; }
 	int Get_time_left() const { return trigger->Get_time_left(); }
+	Time Get_time_begin() const { return trigger->Get_time_begin(); }
+	unsigned int Get_priority() const { return trigger->Get_priority(); }
 	Trigger_type_t Get_trigger_type() const { return trigger->Get_type(); }
 	Task_header_t Get_header() const { return header; }
 

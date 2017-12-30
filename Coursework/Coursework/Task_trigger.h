@@ -37,6 +37,7 @@ public:
 	unsigned int Get_priority() const { return priority; }
 	Trigger_type_t Get_type() const { return type; }
 	Time Get_time() const { return time; }
+	Time Get_time_begin() const { return time_begin; }
 
 	//
 	// Setters

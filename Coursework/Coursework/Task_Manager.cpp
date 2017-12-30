@@ -282,6 +282,9 @@ std::vector<Task_Info_t> Task_Manager::Get_task_info()
 	{
 		tmp.header = m_Tasks[i]->Get_header();
 		tmp.time_left = m_Tasks[i]->Get_time_left();
+		tmp.time_begin = m_Tasks[i]->Get_time_begin().Get_as_string();
+		tmp.priority = m_Tasks[i]->Get_priority();
+		tmp.type = m_Tasks[i]->Get_trigger_type();
 		tasks_info.push_back(tmp);
 	}
 	m_Tasks_mutex.unlock();

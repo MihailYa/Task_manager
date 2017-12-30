@@ -5,34 +5,7 @@ c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursew
   c:\program files (x86)\windows kits\10\include\10.0.16299.0\ucrt\time.h(505): note: see declaration of 'localtime'
 c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\_time.cpp(62): warning C4996: 'localtime': This function or variable may be unsafe. Consider using localtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
   c:\program files (x86)\windows kits\10\include\10.0.16299.0\ucrt\time.h(505): note: see declaration of 'localtime'
-c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\_time.cpp(347): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 1 has type 'boost::gregorian::greg_year'
-c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\_time.cpp(347): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 2 has type 'boost::gregorian::greg_month'
-c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\_time.cpp(347): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 3 has type 'boost::gregorian::greg_day'
-  Task_trigger_weekly.cpp
-  Task_trigger_once.cpp
-  Task_trigger_monthly.cpp
-  Task_trigger_entrance.cpp
-  Task_trigger_dayly.cpp
-  Task_trigger.cpp
-  Task_Manager.cpp
-c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\task_manager.cpp(59): warning C4297: 'Task_Manager::~Task_Manager': function assumed not to throw an exception but does
-  c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\task_manager.cpp(59): note: destructor or deallocator has a (possibly implicit) non-throwing exception specification
-c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\task_manager.cpp(67): warning C4297: 'Task_Manager::~Task_Manager': function assumed not to throw an exception but does
-  c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\task_manager.cpp(67): note: destructor or deallocator has a (possibly implicit) non-throwing exception specification
-c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\task_manager.cpp(77): warning C4297: 'Task_Manager::~Task_Manager': function assumed not to throw an exception but does
-  c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\task_manager.cpp(77): note: destructor or deallocator has a (possibly implicit) non-throwing exception specification
-c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\task_manager.cpp(107): warning C4101: 'e': unreferenced local variable
-c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\task_manager.cpp(112): warning C4101: 'e': unreferenced local variable
-c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\task_manager.cpp(142): warning C4244: 'initializing': conversion from 'std::streamoff' to 'unsigned int', possible loss of data
-c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\task_manager.cpp(181): warning C4101: 'e': unreferenced local variable
-c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\task_manager.cpp(229): warning C4244: 'initializing': conversion from 'std::streamoff' to 'unsigned int', possible loss of data
-c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\task_manager.cpp(245): warning C4101: 'e': unreferenced local variable
-c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\task_manager.cpp(402): warning C4244: 'initializing': conversion from 'std::streamoff' to 'unsigned int', possible loss of data
-c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\task_manager.cpp(411): warning C4244: 'initializing': conversion from 'std::streamoff' to 'unsigned int', possible loss of data
-  Task_Exception.cpp
-  Task_act_prog.cpp
-  Task_act_alert.cpp
-  Task_act.cpp
-  Task.cpp
-  Alert_Manager.cpp
+c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\_time.cpp(362): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 1 has type 'boost::gregorian::greg_year'
+c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\_time.cpp(362): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 2 has type 'boost::gregorian::greg_month'
+c:\users\mikle\documents\visual studio 2017\projects\github\task_manager\coursework\coursework\_time.cpp(362): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 3 has type 'boost::gregorian::greg_day'
   Coursework.vcxproj -> C:\Users\mikle\Documents\Visual Studio 2017\Projects\GitHub\Task_manager\Coursework\Debug\TaskManager.lib

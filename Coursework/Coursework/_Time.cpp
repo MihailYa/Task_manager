@@ -215,6 +215,21 @@ Time_t Time::Get_time() const
 	return time;
 }
 
+std::string Time::Get_as_string() const
+{
+	std::string tmp = "";
+	tmp += std::to_string(time.dat.day().as_number());
+	tmp += ".";
+	tmp += std::to_string(time.dat.month().as_number());
+	tmp += ".";
+	tmp += std::to_string(time.dat.year());
+	tmp += " ";
+	tmp += std::to_string(time.hours);
+	tmp += ":";
+	tmp += std::to_string(time.minutes);
+
+	return tmp;
+}
 
 const Time Time::operator+(const int num_of_days) const
 {

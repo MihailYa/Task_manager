@@ -58,15 +58,47 @@ namespace TaskManagerForm
 		{
 			TaskList->Rows->Add();
 			TaskList->Rows[i]->Cells[0]->Value = tasks_info[i].header.id;
-			TaskList->Rows[i]->Cells[1]->Value = gcnew System::String(tasks_info[i].header.name.c_str());
-			TaskList->Rows[i]->Cells[2]->Value = gcnew System::String(tasks_info[i].header.desc.c_str());
-			if (tasks_info[i].time_left == INF)
-				TaskList->Rows[i]->Cells[3]->Value = gcnew System::String("More then hour...");
-			else
-				TaskList->Rows[i]->Cells[3]->Value = tasks_info[i].time_left;
+			TaskList->Rows[i]->Cells[1]->Value = gcnew System::String(tasks_info[i].time_begin.c_str());
+			switch (tasks_info[i].type)
+			{
+			case DAYLY:
+				TaskList->Rows[i]->Cells[2]->Value = gcnew System::String("Dayly");
+				break;
+			case WEEKLY:
+				TaskList->Rows[i]->Cells[2]->Value = gcnew System::String("Weekly");
+				break;
+			case MONTHLY:
+				TaskList->Rows[i]->Cells[2]->Value = gcnew System::String("Monthly");
+				break;
+			case ONCE:
+				TaskList->Rows[i]->Cells[2]->Value = gcnew System::String("Once");
+				break;
+			case ENTRANCE:
+				TaskList->Rows[i]->Cells[2]->Value = gcnew System::String("Entrance");
+				break;
+			default:
+				break;
+			}
+			TaskList->Rows[i]->Cells[3]->Value = tasks_info[i].priority;
 
-			TaskList->Rows[i]->Cells[4]->Value = gcnew System::String("Delete");
-			TaskList->Rows[i]->Cells[5]->Value = gcnew System::String("Export");
+			TaskList->Rows[i]->Cells[4]->Value = gcnew System::String(tasks_info[i].header.name.c_str());
+			TaskList->Rows[i]->Cells[5]->Value = gcnew System::String(tasks_info[i].header.desc.c_str());
+			if (tasks_info[i].time_left >= 60)
+				TaskList->Rows[i]->Cells[6]->Value = gcnew System::String("More then hour...");
+			else
+				TaskList->Rows[i]->Cells[6]->Value = tasks_info[i].time_left;
+
+			TaskList->Rows[i]->Cells[7]->Value = gcnew System::String("Delete");
+			TaskList->Rows[i]->Cells[8]->Value = gcnew System::String("Export");
+
+			if (tasks_info[i].time_left >= 60)
+			{
+				TaskList->Rows[i]->DefaultCellStyle->BackColor = Color::Green;
+			}
+			else
+			{
+				TaskList->Rows[i]->DefaultCellStyle->BackColor = Color::Red;
+			}
 		}
 		this->Cursor = Cursors::Default;
 	}
