@@ -155,14 +155,14 @@ namespace TaskManagerForm
 		try
 		{
 			unsigned int id;
-			if (e->ColumnIndex == 4)
+			if (e->ColumnIndex == 7)
 			{
 				id = atoi(msclr::interop::marshal_as<std::string>(this->TaskList->Rows[e->RowIndex]->Cells[0]->Value->ToString()).c_str());
 				m_TaskManager->delete_task(id);
 				refresh();
 				MessageBox::Show(L"Task was successfully deleted!", L"Info", MessageBoxButtons::OK, MessageBoxIcon::Information);
 			}
-			else if (e->ColumnIndex == 5)
+			else if (e->ColumnIndex == 8)
 			{
 				id = atoi(msclr::interop::marshal_as<std::string>(this->TaskList->Rows[e->RowIndex]->Cells[0]->Value->ToString()).c_str());
 				System::Windows::Forms::DialogResult result = ExportTask->ShowDialog();
